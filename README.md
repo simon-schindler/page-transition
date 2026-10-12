@@ -1,4 +1,4 @@
-# Page-transition
+# page-transition
 A page transition library for the Next.js App Router.
 
 ## Features
@@ -8,11 +8,7 @@ A page transition library for the Next.js App Router.
 
 ## Install
 
-Copy page-transition-0.1.0-beta.1.tgz into the root directory of your Next.js project.
-
-Install the package using npm:
-
-`npm install ./page-transition-0.1.0-beta.1.tgz`
+`npm install page-transition@beta`
 
 ## Usage
 Import your page transition styles and wrap your page content with `TransitionProvider` in your root layout.
