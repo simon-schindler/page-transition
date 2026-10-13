@@ -27,7 +27,8 @@ interface Props{
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     reverse: RefObject<{_lock: boolean, lock: boolean}>
     delay: RefObject<number|null>
-    popRun: RefObject<boolean>
+    useUse: RefObject<boolean>
+    resolveUseFn: RefObject<(()=>void)|null>
 }
 export function useHandleLinkClick({
     container,
@@ -38,7 +39,8 @@ export function useHandleLinkClick({
     reverse,
     delay,
     state, 
-    popRun,
+    useUse,
+    resolveUseFn
 }:Props){
     
     const router = useRouter()
@@ -49,13 +51,13 @@ export function useHandleLinkClick({
         transitionEndData,
         fn: ()=>{
             if(!nextPage.current)return
+            if(useUse.current)resolveUseFn.current?.()
             
             state.current = 'navigating'
             router.push(nextPage.current)
             nextPage.current = null
         } 
     })
-
     const removeEnter = useTransitionEndObj({
         transitionEndData,
         fn: ()=>{
@@ -73,6 +75,8 @@ export function useHandleLinkClick({
                 reverse,
                 delay
             })
+
+            if(useUse.current)resolveUseFn.current?.()
             
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
@@ -83,12 +87,12 @@ export function useHandleLinkClick({
     
     handleLinkClick.current = useCallback((e: React.MouseEvent, url:string)=>{
         e.preventDefault()
-        if(popRun.current)return
+        
         nextPage.current = url
         new Promise<void>((resolve)=>{
             if(state.current === 'navigating'){
-                console.log('navigating')
                 if(url === currentPathname.current){
+                    
                     return 
                 }else if(url !== currentPathname.current){
                     if(checkTransitionFinish(
@@ -106,7 +110,7 @@ export function useHandleLinkClick({
                 resolve()
             }
         }).then(()=>{
-            
+
             if(url === currentPathname.current){
                 if(state.current !== 'exiting')return
                 transitionEnd({

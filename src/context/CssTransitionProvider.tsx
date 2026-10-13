@@ -43,14 +43,14 @@ export function CssTransitionProvider({
     
     const pathname = usePathname()
     const currentPathname = useRef(pathname)
-    
+    const resolveUseFn = useRef<(()=>void)|null>(null)
     const mount=useRef({
         mounted: false,
         initPathname: pathname
     })
     
     const state = useRef<'idle'|'exiting'|'navigating'|'entering'>('idle')
-    const popRun = useRef(false)
+    const useUse = useRef(false)
     
     const reverse = useRef({
         _lock: true,
@@ -83,7 +83,8 @@ export function CssTransitionProvider({
         state,
         reverse,
         delay,
-        popRun
+        useUse,
+        resolveUseFn
     })
     useHandleLinkClick({
         container,
@@ -94,7 +95,8 @@ export function CssTransitionProvider({
         state,
         reverse,
         delay,
-        popRun
+        useUse,
+        resolveUseFn
     })
     useScrollRestoration()
 

@@ -25,7 +25,8 @@ interface Props{
     reverse: RefObject<{_lock: boolean, lock: boolean}>
     delay: RefObject<number|null>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
-    popRun: RefObject<boolean>
+    useUse: RefObject<boolean>
+    resolveUseFn: RefObject<(()=>void)|null>
 }
 export function usePopState({
     container,
@@ -35,16 +36,16 @@ export function usePopState({
     reverse,
     delay,
     state,
-    popRun
+    useUse,
+    resolveUseFn
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
     
     if(promise){
-        popRun.current =true
-        
+        useUse.current =true
         use(promise)
-        popRun.current =false
+        useUse.current =false
     }
 
     const resolveFn = useRef<(()=>void)|null>(null)
@@ -58,7 +59,6 @@ export function usePopState({
             reverse.current.lock = true
         }
     })
-    
     const afterExit = useTransitionEndObj({
         transitionEndData,
         fn: afterExitFn.current = ()=>{
@@ -77,7 +77,6 @@ export function usePopState({
             resolveFn.current?.()
         }
     })
-    
     const pop = useTransitionEndObj({
         transitionEndData,
         fn: ()=>{
@@ -85,7 +84,6 @@ export function usePopState({
             window.scrollTo(0,window.history.state.scrollY??0)
             
             resolveFn.current?.()
-            
             resolveFn.current = null
         }
     })
@@ -96,6 +94,7 @@ export function usePopState({
             setPromise(
                 new Promise<void>((resolve)=>{
                     resolveFn.current = resolve
+                    resolveUseFn.current = resolve
                     
                     new Promise<void>((resolveNavigating)=>{
                         

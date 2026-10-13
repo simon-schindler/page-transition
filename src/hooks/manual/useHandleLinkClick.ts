@@ -9,27 +9,28 @@ interface Props{
     handleLinkClick: RefObject<((e: React.MouseEvent, url: string)=>void)>
     resolveFn: RefObject<(()=>void)|null>
     state: RefObject<'idle'|'exiting'|'entering'>
-    popRun: RefObject<boolean>
+    useUse: RefObject<boolean>
+    resolveUseFn: RefObject<(()=>void)|null>
 }
 
 export function useHandleLinkClick({
     handleLinkClick,
     resolveFn,
     state,
-    popRun
+    useUse,
+    resolveUseFn
 }:Props){
     const router = useRouter()
     
     handleLinkClick.current = useCallback((e, url)=>{
         e.preventDefault()
 
-        if(popRun.current)return
-
         new Promise<void>((resolve)=>{
             resolveFn.current = resolve
             state.current = 'exiting'
 
         }).then(()=>{
+            if(useUse.current)resolveUseFn.current?.()
             router.push(url)
         })
     },[])

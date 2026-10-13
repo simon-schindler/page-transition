@@ -21,18 +21,21 @@ export function ManualTransitionProvider({
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
     const resolveFn = useRef<(()=>void)|null>(null)
     const state = useRef<'idle'|'exiting'|'entering'>('idle')
-    const popRun = useRef(false)
+    const useUse = useRef(false)
+    const resolveUseFn = useRef<(()=>void)|null>(null)
     
     usePopState({
         resolveFn, 
         state,
-        popRun
+        useUse,
+        resolveUseFn
     })
     useHandleLinkClick({
         handleLinkClick,
         resolveFn,
         state,
-        popRun
+        useUse,
+        resolveUseFn
     })
 
     useEffect(()=>{
