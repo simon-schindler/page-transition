@@ -21,16 +21,17 @@ export function usePopState({
     if(promise){
         useUse.current = true
         use(promise)
+    }else{
         useUse.current = false
     }
     useEffect(()=>{
         const handlePopstate=()=>{
             setPromise(
-                new Promise<void>((resolve)=>{
+                new Promise<void>((resolve, reject)=>{
                     resolveFn.current = resolve
-                    resolveUseFn.current = resolve
+                    resolveUseFn.current = reject
                     state.current = 'exiting'
-                })
+                }).then(()=>setPromise(null)).catch(()=>setPromise(null))
             )
         }
         window.addEventListener('popstate', handlePopstate)

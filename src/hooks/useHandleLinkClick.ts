@@ -76,7 +76,12 @@ export function useHandleLinkClick({
                 delay
             })
 
-            if(useUse.current)resolveUseFn.current?.()
+            if(useUse.current){
+                resolveUseFn.current?.()
+                state.current='navigating'
+                router.push(currentPathname.current)
+            }
+            
             
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')

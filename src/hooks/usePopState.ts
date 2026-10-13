@@ -43,9 +43,10 @@ export function usePopState({
     const [promise, setPromise]=useState<null| Promise<void>>(null)
     
     if(promise){
-        useUse.current =true
+        useUse.current = true
         use(promise)
-        useUse.current =false
+    }else{
+        useUse.current = false
     }
 
     const resolveFn = useRef<(()=>void)|null>(null)
@@ -75,6 +76,8 @@ export function usePopState({
             reverse.current.lock = false
             
             resolveFn.current?.()
+            setPromise(null)
+            useUse.current = false
         }
     })
     const pop = useTransitionEndObj({
@@ -84,17 +87,18 @@ export function usePopState({
             window.scrollTo(0,window.history.state.scrollY??0)
             
             resolveFn.current?.()
-            resolveFn.current = null
+            setPromise(null)
         }
     })
     
     useEffect(()=>{
         
         const handlePopstate=()=>{
+            
             setPromise(
-                new Promise<void>((resolve)=>{
+                new Promise<void>((resolve, reject)=>{
                     resolveFn.current = resolve
-                    resolveUseFn.current = resolve
+                    resolveUseFn.current = reject
                     
                     new Promise<void>((resolveNavigating)=>{
                         
@@ -106,6 +110,7 @@ export function usePopState({
                                 transitionEndData.current,
                                 ()=>{
                                     resolveFn.current?.()
+                                    setPromise(null)
                                 }))return
                             }
                             else if(currentPathname.current === window.location.pathname){
@@ -146,7 +151,7 @@ export function usePopState({
                         
                         state.current='exiting'
                     }) 
-                })
+                }).catch(()=>setPromise(null))
             )
         }
         window.addEventListener('popstate', handlePopstate)
