@@ -8,7 +8,7 @@ interface Props{
     href: string
     className?: string
     prefetch?: boolean 
-    onClick?: ()=>void
+    onClick?: (e:React.MouseEvent)=>void
     children: ReactNode
 }
 
@@ -27,7 +27,7 @@ export function TransitionLink({
         href={href} 
         onClick={(e)=>{
             handleLinkClick.current(e, href)
-            onClick?.()
+            onClick?.(e)
         }}
         className={className}
         prefetch={prefetch}

@@ -84,7 +84,7 @@ options={{
 | className | string | - | - |
 | scroll | boolean | true | - |
 | prefetch | "auto" \| null | null | - |
-| onClick | ()=>void | - | - |
+| onClick | (e: React.MouseEvent)=>void | - | - |
 
 **Prop Descriptions**
 TransitionLink uses the Next.js Link component internally. For details about navigation behavior and supported props, refer to the official Next.js documentation.
