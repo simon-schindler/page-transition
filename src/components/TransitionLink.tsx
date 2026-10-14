@@ -4,7 +4,21 @@ import { useTransitionContext } from "../context/TransitionContext"
 
 import type { ReactNode } from "react"
 
-export function TransitionLink({href, children}:{href: string, children: ReactNode}){
+interface Props{
+    href: string
+    className?: string
+    prefetch?: boolean 
+    onClick?: ()=>void
+    children: ReactNode
+}
+
+export function TransitionLink({
+    href, 
+    className, 
+    prefetch,
+    onClick,
+    children
+}: Props){
     
     const {handleLinkClick} = useTransitionContext()
 
@@ -13,7 +27,11 @@ export function TransitionLink({href, children}:{href: string, children: ReactNo
         href={href} 
         onClick={(e)=>{
             handleLinkClick.current(e, href)
-        }}>
+            onClick?.()
+        }}
+        className={className}
+        prefetch={prefetch}
+        >
             {children}
         </Link>
     )

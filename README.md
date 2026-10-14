@@ -78,9 +78,16 @@ options={{
 ### `TransitionLink`
 #### Props
 
-|Prop|type|default|
-|---|---|---|
-| href | string | - |
+|Prop|Type|Default|Required
+|---|---|---|---|
+| href | string | - | Yes |
+| className | string | - | - |
+| scroll | boolean | true | - |
+| prefetch | "auto" \| null | null | - |
+| onClick | ()=>void | - | - |
+
+**Prop Descriptions**
+TransitionLink uses the Next.js Link component internally. For details about navigation behavior and supported props, refer to the official Next.js documentation.
 
 **Description**  
 Triggers the transition.
