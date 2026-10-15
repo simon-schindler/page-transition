@@ -17,6 +17,7 @@ import { useScrollRestoration } from "../hooks/useScrollRestoration";
 import { usePopState } from "../hooks/usePopState";
 
 import { parseDelay } from "../functions/parseDelay";
+import { pollTransitionStart } from "../functions/pollTransitionStart"; 
 
 interface TransitionOptions{
     transitionProperty?: 'opacity'|'clip-path'
@@ -83,6 +84,8 @@ export function CssTransitionProvider({
         elArray: defaultOptions.overlayCount === 0 ? container : overlayItems,
         transitionProperty: defaultOptions.transitionProperty
     })
+
+    const pollRafId = useRef<number|null>(null)
     
     usePopState({
         container,
@@ -142,9 +145,16 @@ export function CssTransitionProvider({
         container.current.classList.remove('exit')
         container.current.classList.add('enter')
         
+        pollTransitionStart({
+            transitionEndData, 
+            id: pollRafId, 
+            fn: ()=>{
+                state.current = 'entering'
+            }
+        })
+        
         currentPathname.current = pathname
-        state.current = 'entering'
-
+        
         reverse.current.lock = false
         
     },[pathname])

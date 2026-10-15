@@ -82,7 +82,6 @@ export function useHandleLinkClick({
                 router.push(currentPathname.current)
             }
             
-            
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
             reverse.current.lock = false
@@ -96,8 +95,8 @@ export function useHandleLinkClick({
         nextPage.current = url
         new Promise<void>((resolve)=>{
             if(state.current === 'navigating'){
-                if(url === currentPathname.current){
-                    
+                console.log('state.current === navigating')
+                if(url === currentPathname.current){   
                     return 
                 }else if(url !== currentPathname.current){
                     if(checkTransitionFinish(
