@@ -27,8 +27,8 @@ type Mode = 'css'|'manual'
 type TransitionProperty = 'opacity'|'clip-path'
 
 interface TransitionOptions{
-    transitionProperty: TransitionProperty
-    overlayCount: number
+    transitionProperty?: TransitionProperty
+    overlayCount?: number
 }
 interface ProviderProps{
     header?: ReactNode
@@ -40,10 +40,7 @@ interface ProviderProps{
 export function TransitionProvider({
     header,
     mode='css',
-    options={
-        transitionProperty: 'opacity',
-        overlayCount: 0
-    }, 
+    options, 
     children,
 }:ProviderProps){
     

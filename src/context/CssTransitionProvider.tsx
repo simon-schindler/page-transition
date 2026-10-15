@@ -19,6 +19,10 @@ import { usePopState } from "../hooks/usePopState";
 import { parseDelay } from "../functions/parseDelay";
 
 interface TransitionOptions{
+    transitionProperty?: 'opacity'|'clip-path'
+    overlayCount?: number
+}
+interface DefaultOptions{
     transitionProperty: 'opacity'|'clip-path'
     overlayCount: number
 }
@@ -30,12 +34,15 @@ interface ProviderProps{
 
 export function CssTransitionProvider({
     header, 
-    options={
-        transitionProperty:'opacity',
-        overlayCount: 0
-    }, 
+    options, 
     children
 }:ProviderProps){
+
+    const defaultOptions:DefaultOptions = {
+        transitionProperty: 'opacity',
+        overlayCount: 0,
+        ...options
+    }
 
     const container = useRef<HTMLDivElement|null>(null)
     const overlayWrapper = useRef<HTMLDivElement|null>(null)
@@ -43,14 +50,16 @@ export function CssTransitionProvider({
     
     const pathname = usePathname()
     const currentPathname = useRef(pathname)
-    const resolveUseFn = useRef<(()=>void)|null>(null)
+    
     const mount=useRef({
         mounted: false,
         initPathname: pathname
     })
     
     const state = useRef<'idle'|'exiting'|'navigating'|'entering'>('idle')
+    
     const useUse = useRef(false)
+    const resolveUseFn = useRef<(()=>void)|null>(null)
     
     const reverse = useRef({
         _lock: true,
@@ -71,8 +80,8 @@ export function CssTransitionProvider({
 
     const transitionEndHandler = useTransitionEndHandler()
     const transitionEndData = useTransitionEndData({
-        elArray: options.overlayCount === 0 ? container : overlayItems,
-        transitionProperty: options.transitionProperty
+        elArray: defaultOptions.overlayCount === 0 ? container : overlayItems,
+        transitionProperty: defaultOptions.transitionProperty
     })
     
     usePopState({
@@ -156,7 +165,7 @@ export function CssTransitionProvider({
                 className="overlay-wrapper"
                 >
                     {
-                        Array.from({length: options.overlayCount}).map((_,i)=>(
+                        Array.from({length: defaultOptions.overlayCount}).map((_,i)=>(
                             <div 
                             key={i}
                             ref={(el)=>{
