@@ -86,7 +86,7 @@ options={{
 | prefetch | "auto" \| null | null | - |
 | onClick | (e: React.MouseEvent)=>void | - | - |
 
-**Prop Descriptions**
+**Prop Descriptions**  
 TransitionLink uses the Next.js Link component internally. For details about navigation behavior and supported props, refer to the official Next.js documentation.
 
 **Description**  
@@ -203,10 +203,10 @@ overlayCount: 10
     background: black;
     transition: none;
     will-change: clip-path;
-    clip-path: inset(100% 0 0 0);
+    clip-path: inset(100% -1px 0 -1px);
 }
 [data-transition].exit .overlay-item{
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(0 -1px 0 -1px);
     transition: clip-path 1.0s ease;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
@@ -215,7 +215,7 @@ overlayCount: 10
     }
 }
 [data-transition].enter .overlay-item{
-    clip-path: inset(0 0 100% 0);
+    clip-path: inset(0 -1px 100% -1px);
     transition: clip-path 1.0s ease;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
