@@ -8,7 +8,7 @@ import { useTransitionEndObj } from "./useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
 
 import { checkTransitionFinish } from "../functions/checkTransitionFinish"
-import { pollTransitionStart } from "../functions/pollTransitionStart"
+
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
     propertyName: 'opacity'|'clip-path'
@@ -41,7 +41,6 @@ export function usePopState({
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
-    const pollRafId = useRef<number|null>(null)
     
     if(promise){
         useUse.current = true
@@ -71,18 +70,11 @@ export function usePopState({
                 delay
             })
             
-            state.current = 'navigating'
+            
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
 
-            pollTransitionStart({
-                transitionEndData,
-                id:pollRafId,
-                fn:()=>{
-                    state.current='entering'
-                }
-            })
-
+            state.current='entering'
             reverse.current.lock = false
             
             resolveFn.current?.()
@@ -98,6 +90,7 @@ export function usePopState({
             
             resolveFn.current?.()
             setPromise(null)
+            useUse.current = false
         }
     })
     
@@ -113,9 +106,8 @@ export function usePopState({
                     new Promise<void>((resolveNavigating)=>{
                         
                         if(state.current === "navigating"){
-                            
+        
                             if(currentPathname.current !== window.location.pathname){
-
                                 if(checkTransitionFinish(
                                 transitionEndData.current,
                                 ()=>{
@@ -124,7 +116,6 @@ export function usePopState({
                                 }))return
                             }
                             else if(currentPathname.current === window.location.pathname){
-                                
                                 if(checkTransitionFinish(
                                 transitionEndData.current,
                                 afterExitFn.current
@@ -138,6 +129,7 @@ export function usePopState({
                             resolveNavigating()
                         }
                     }).then(()=>{ 
+                        
                         if(currentPathname.current === window.location.pathname){
                             transitionEnd({
                                 transitionEndObj: afterExit,
@@ -148,14 +140,14 @@ export function usePopState({
 
                             return
                         }
-                        
+                       
                         transitionEnd({
                             transitionEndObj: pop, 
                             transitionEndHandler,
                             reverse,
                             delay
                         })
-
+                        
                         container.current?.classList.remove('enter')
                         container.current?.classList.add('exit')
                         

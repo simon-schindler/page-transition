@@ -10,8 +10,6 @@ import { useTransitionEndObj } from "../hooks/useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
 import { checkTransitionFinish } from "../functions/checkTransitionFinish"
 
-import { pollTransitionStart } from "../functions/pollTransitionStart"
-
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
     propertyName: 'opacity'|'clip-path'     
@@ -31,6 +29,7 @@ interface Props{
     delay: RefObject<number|null>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
+    basePath: RefObject<string|null>
 }
 export function useHandleLinkClick({
     container,
@@ -42,13 +41,13 @@ export function useHandleLinkClick({
     delay,
     state, 
     useUse,
-    resolveUseFn
+    resolveUseFn,
+    basePath
 }:Props){
     
     const router = useRouter()
     const afterExitFn = useRef<(()=>void)|null>(null)
     const nextPage = useRef<string|null>(null)
-    const pollRafId = useRef<number|null>(null)
 
     const push = useTransitionEndObj({
         transitionEndData,
@@ -85,19 +84,11 @@ export function useHandleLinkClick({
                 router.push(currentPathname.current)
             }
 
-            state.current = 'navigating'
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
 
-            pollTransitionStart({
-                transitionEndData,
-                id: pollRafId,
-                fn: ()=>{
-                    state.current='entering'
-                    reverse.current.lock = false
-                }
-            })
-            
+            state.current='entering'
+            reverse.current.lock = false
         }
     })
     
@@ -105,12 +96,13 @@ export function useHandleLinkClick({
         e.preventDefault()
         
         nextPage.current = url
+        const basePathUrl = basePath.current? basePath.current + url : url
         new Promise<void>((resolve)=>{
             if(state.current === 'navigating'){
                 console.log('state.current === navigating')
-                if(url === currentPathname.current){   
+                if(basePathUrl === currentPathname.current){   
                     return 
-                }else if(url !== currentPathname.current){
+                }else if(basePathUrl !== currentPathname.current){
                     if(checkTransitionFinish(
                         transitionEndData.current,
                         ()=>{
@@ -127,7 +119,7 @@ export function useHandleLinkClick({
             }
         }).then(()=>{
 
-            if(url === currentPathname.current){
+            if(basePathUrl === currentPathname.current){
                 if(state.current !== 'exiting')return
                 transitionEnd({
                     transitionEndObj: afterExit,

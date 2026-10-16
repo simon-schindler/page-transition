@@ -58,6 +58,7 @@ export function CssTransitionProvider({
     })
     
     const state = useRef<'idle'|'exiting'|'navigating'|'entering'>('idle')
+    const basePath = useRef<string|null>(null)
     
     const useUse = useRef(false)
     const resolveUseFn = useRef<(()=>void)|null>(null)
@@ -108,7 +109,8 @@ export function CssTransitionProvider({
         reverse,
         delay,
         useUse,
-        resolveUseFn
+        resolveUseFn,
+        basePath
     })
     useScrollRestoration()
 
@@ -125,6 +127,7 @@ export function CssTransitionProvider({
         if(mount.current.mounted === false && 
             mount.current.initPathname === pathname
         ){
+            basePath.current = window.location.pathname.slice(0, -pathname.length)
             return
         }
         mount.current.mounted = true
@@ -153,7 +156,7 @@ export function CssTransitionProvider({
             }
         })
         
-        currentPathname.current = pathname
+        if(state.current === 'navigating')currentPathname.current = window.location.pathname
         
         reverse.current.lock = false
         
