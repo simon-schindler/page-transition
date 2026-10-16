@@ -10,6 +10,8 @@ import { useTransitionEndObj } from "../hooks/useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
 import { checkTransitionFinish } from "../functions/checkTransitionFinish"
 
+import { pollTransitionStart } from "../functions/pollTransitionStart"
+
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
     propertyName: 'opacity'|'clip-path'     
@@ -46,6 +48,7 @@ export function useHandleLinkClick({
     const router = useRouter()
     const afterExitFn = useRef<(()=>void)|null>(null)
     const nextPage = useRef<string|null>(null)
+    const pollRafId = useRef<number|null>(null)
 
     const push = useTransitionEndObj({
         transitionEndData,
@@ -81,11 +84,20 @@ export function useHandleLinkClick({
                 state.current='navigating'
                 router.push(currentPathname.current)
             }
-            
+
+            state.current = 'navigating'
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
-            reverse.current.lock = false
-            state.current='entering'
+
+            pollTransitionStart({
+                transitionEndData,
+                id: pollRafId,
+                fn: ()=>{
+                    state.current='entering'
+                    reverse.current.lock = false
+                }
+            })
+            
         }
     })
     

@@ -8,7 +8,7 @@ import { useTransitionEndObj } from "./useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
 
 import { checkTransitionFinish } from "../functions/checkTransitionFinish"
-
+import { pollTransitionStart } from "../functions/pollTransitionStart"
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
     propertyName: 'opacity'|'clip-path'
@@ -41,6 +41,7 @@ export function usePopState({
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
+    const pollRafId = useRef<number|null>(null)
     
     if(promise){
         useUse.current = true
@@ -70,9 +71,18 @@ export function usePopState({
                 delay
             })
             
+            state.current = 'navigating'
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
-            state.current='entering'
+
+            pollTransitionStart({
+                transitionEndData,
+                id:pollRafId,
+                fn:()=>{
+                    state.current='entering'
+                }
+            })
+
             reverse.current.lock = false
             
             resolveFn.current?.()
