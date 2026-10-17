@@ -9,13 +9,12 @@ A page transition library for the Next.js App Router.
 - CSS & Manual mode
 - Scroll restoration
 
-## Install
-
-`npm install page-transition@beta`  
+## Install  
+![66.4 KB](https://img.shields.io/badge/66.4_KB-gray)  
   
-  ![66.4 KB](https://img.shields.io/badge/66.4_KB-gray)
-
-## Usage
+  `npm install page-transition@beta`  
+  
+  ## Usage
 Import your page transition styles and wrap your page content with `TransitionProvider` in your root layout.
 
 ```tsx
