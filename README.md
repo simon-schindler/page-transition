@@ -13,7 +13,7 @@ A page transition library for the Next.js App Router.
 
 `npm install page-transition@beta`  
   
-  https://img.shields.io/badge/66.4KB-8A2BE2-555555
+  ![66.4 KB](https://img.shields.io/badge/66.4KB-555555)
 
 ## Usage
 Import your page transition styles and wrap your page content with `TransitionProvider` in your root layout.
