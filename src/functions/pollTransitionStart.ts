@@ -16,6 +16,7 @@ export function pollTransitionStart({
     fn,
     transitionEndData
 }:Props){
+    if(id.current !== null)cancelAnimationFrame(id.current)
     id.current = requestAnimationFrame(()=>{
         if(checkTransitionStart(transitionEndData.current, fn)){
             return
