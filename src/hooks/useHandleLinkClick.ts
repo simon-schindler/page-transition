@@ -8,7 +8,8 @@ import type { RefObject } from "react"
 import { useTransitionEndObj } from "../hooks/useTransitionEndObj"
 
 import { transitionEnd } from "../functions/transitionEnd"
-import { checkTransitionFinish } from "../functions/checkTransitionFinish"
+
+import { pollTransitionStart } from "../functions/pollTransitionStart"
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
@@ -30,6 +31,7 @@ interface Props{
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
     basePath: RefObject<string|null>
+    pollRafId: RefObject<number|null>
 }
 export function useHandleLinkClick({
     container,
@@ -42,7 +44,8 @@ export function useHandleLinkClick({
     state, 
     useUse,
     resolveUseFn,
-    basePath
+    basePath,
+    pollRafId
 }:Props){
     
     const router = useRouter()
@@ -84,11 +87,19 @@ export function useHandleLinkClick({
                 router.push(currentPathname.current)
             }
 
+            state.current = 'navigating'
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
 
-            state.current='entering'
-            reverse.current.lock = false
+            pollTransitionStart({
+                id: pollRafId,
+                transitionEndData,
+                fn:()=>{
+                    state.current='entering'
+                    reverse.current.lock = false
+                }
+            })
+
         }
     })
     
@@ -99,20 +110,16 @@ export function useHandleLinkClick({
         const basePathUrl = basePath.current? basePath.current + url : url
         new Promise<void>((resolve)=>{
             if(state.current === 'navigating'){
-                console.log('state.current === navigating')
                 if(basePathUrl === currentPathname.current){   
                     return 
                 }else if(basePathUrl !== currentPathname.current){
-                    if(checkTransitionFinish(
-                        transitionEndData.current,
-                        ()=>{
-                            if(!nextPage.current)return
-                            state.current = 'navigating'
-                            router.push(nextPage.current)
-                            nextPage.current = null
-                        }
-                    ))return
-                    resolve()
+                    if(!nextPage.current)return
+
+                    state.current = 'navigating'
+                    router.push(nextPage.current)
+                    nextPage.current = null
+                        
+                    return
                 }
             }else{
                 resolve()

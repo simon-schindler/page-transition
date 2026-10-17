@@ -7,7 +7,7 @@ import type { RefObject } from "react"
 import { useTransitionEndObj } from "./useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
 
-import { checkTransitionFinish } from "../functions/checkTransitionFinish"
+import { pollTransitionStart } from "../functions/pollTransitionStart"
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
@@ -27,6 +27,7 @@ interface Props{
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
+    pollRafId: RefObject<number|null>
 }
 export function usePopState({
     container,
@@ -37,7 +38,8 @@ export function usePopState({
     delay,
     state,
     useUse,
-    resolveUseFn
+    resolveUseFn,
+    pollRafId
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
@@ -70,16 +72,22 @@ export function usePopState({
                 delay
             })
             
-            
+            state.current = 'navigating'
             container.current?.classList.remove('exit')
             container.current?.classList.add('enter')
-
-            state.current='entering'
-            reverse.current.lock = false
             
             resolveFn.current?.()
             setPromise(null)
             useUse.current = false
+            
+            pollTransitionStart({
+                id: pollRafId,
+                transitionEndData,
+                fn:()=>{
+                    state.current='entering'
+                    reverse.current.lock = false
+                }
+            })
         }
     })
     const pop = useTransitionEndObj({
@@ -106,24 +114,13 @@ export function usePopState({
                     new Promise<void>((resolveNavigating)=>{
                         
                         if(state.current === "navigating"){
-        
                             if(currentPathname.current !== window.location.pathname){
-                                if(checkTransitionFinish(
-                                transitionEndData.current,
-                                ()=>{
-                                    resolveFn.current?.()
-                                    setPromise(null)
-                                }))return
+                                resolveFn.current?.()
+                                setPromise(null)
+                                return
                             }
                             else if(currentPathname.current === window.location.pathname){
-                                if(checkTransitionFinish(
-                                transitionEndData.current,
-                                afterExitFn.current
-                                )){
-                                    return
-                                }else{
-                                    resolveNavigating() 
-                                }
+                                afterExitFn.current?.()
                             }
                         }else{
                             resolveNavigating()

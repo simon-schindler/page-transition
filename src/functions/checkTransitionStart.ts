@@ -1,5 +1,5 @@
-import { parseOpacityAll } from "./parseOpacityAll";
-import { parseClipPathAll } from "./parseClipPathAll";
+import { parseFirstOpacity } from "./parseFirstOpacity";
+import { parseFirstClipPath } from "./parseFirstClipPath";
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
@@ -7,18 +7,17 @@ interface TransitionEndData{
 }
 
 export function checkTransitionStart(transitionEndData: TransitionEndData, fn:(()=>void)|null){
-    
+    console.log('checkTransitionStart run')
     const parse={
-        'opacity': ()=>parseOpacityAll(transitionEndData.elArray),
-        'clip-path': ()=>parseClipPathAll(transitionEndData.elArray)
+        'opacity': ()=>parseFirstOpacity(transitionEndData.elArray),
+        'clip-path': ()=>parseFirstClipPath(transitionEndData.elArray)
     }
     
     if(parse[transitionEndData.propertyName]()){
-        
-        return false
-    }else{
         fn?.()
         return true
+    }else{
+        return false
     }
     
 }

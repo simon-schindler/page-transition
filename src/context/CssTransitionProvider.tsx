@@ -97,7 +97,8 @@ export function CssTransitionProvider({
         reverse,
         delay,
         useUse,
-        resolveUseFn
+        resolveUseFn,
+        pollRafId
     })
     useHandleLinkClick({
         container,
@@ -110,7 +111,8 @@ export function CssTransitionProvider({
         delay,
         useUse,
         resolveUseFn,
-        basePath
+        basePath,
+        pollRafId
     })
     useScrollRestoration()
 
@@ -139,10 +141,10 @@ export function CssTransitionProvider({
         if(!container.current)return
         
         transitionEnd({
-                transitionEndObj: removeEnter,
-                transitionEndHandler,
-                reverse,
-                delay
+            transitionEndObj: removeEnter,
+            transitionEndHandler,
+            reverse,
+            delay
         })
             
         container.current.classList.remove('exit')
@@ -156,7 +158,7 @@ export function CssTransitionProvider({
             }
         })
         
-        if(state.current === 'navigating')currentPathname.current = window.location.pathname
+        currentPathname.current = window.location.pathname
         
         reverse.current.lock = false
         
