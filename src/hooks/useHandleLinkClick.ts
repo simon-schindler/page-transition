@@ -13,7 +13,9 @@ import { pollTransitionStart } from "../functions/pollTransitionStart"
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'     
+    propertyName: 'opacity'|'clip-path'
+    mirror: boolean
+    mirrorElArray: (HTMLDivElement|null)[]
 }
 interface TransitionEndHandler {
     handler: ((e: TransitionEvent) => void) | null
@@ -27,7 +29,7 @@ interface Props{
     transitionEndHandler:RefObject<TransitionEndHandler>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     reverse: RefObject<{_lock: boolean, lock: boolean}>
-    delay: RefObject<number|null>
+    delayStep: RefObject<number|null>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
     basePath: RefObject<string|null>
@@ -40,7 +42,7 @@ export function useHandleLinkClick({
     transitionEndData,
     transitionEndHandler,
     reverse,
-    delay,
+    delayStep,
     state, 
     useUse,
     resolveUseFn,
@@ -78,7 +80,7 @@ export function useHandleLinkClick({
                 transitionEndObj: removeEnter,
                 transitionEndHandler,
                 reverse,
-                delay
+                delayStep
             })
 
             if(useUse.current){
@@ -132,7 +134,7 @@ export function useHandleLinkClick({
                     transitionEndObj: afterExit,
                     transitionEndHandler,
                     reverse,
-                    delay
+                    delayStep
                 })
                 
                 return
@@ -142,7 +144,7 @@ export function useHandleLinkClick({
                 transitionEndObj: push,
                 transitionEndHandler,
                 reverse,
-                delay
+                delayStep
             })
             
             container.current?.classList.remove('enter')

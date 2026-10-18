@@ -4,7 +4,9 @@ import { transtionEndReverse } from "./transitionEndReverse"
 
 interface TransitionEndObj{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    propertyName: 'opacity' | 'clip-path'
+    mirror: boolean
+    mirrorElArray: (HTMLDivElement|null)[]
     fn: (()=>void)|null 
 }
 interface TransitionEndHandler {
@@ -15,14 +17,14 @@ interface Props{
     transitionEndObj:RefObject<TransitionEndObj>
     transitionEndHandler: RefObject<TransitionEndHandler>
     reverse: RefObject<{_lock: boolean,lock: boolean}>
-    delay: RefObject<number|null>
+    delayStep: RefObject<number|null>
 }
 
 export function transitionEnd({
     transitionEndObj,
     transitionEndHandler,
     reverse,
-    delay
+    delayStep
 }: Props){
     
     const lastIndex = transitionEndObj.current.elArray.length - 1
@@ -31,13 +33,15 @@ export function transitionEnd({
         transitionEndHandler.current.handlerEl){
         transitionEndHandler.current.handlerEl.removeEventListener('transitionend', transitionEndHandler.current.handler)
     }
+
+    const endObj = transitionEndObj.current
     
     if(!reverse.current.lock){
         transtionEndReverse({
             transitionEndObj,
             transitionEndHandler,
             reverse,
-            delay
+            delayStep
         })
         
         return
@@ -47,16 +51,16 @@ export function transitionEnd({
         
         if(e.target !== e.currentTarget)return
         
-        if(transitionEndObj.current.propertyName && 
-            e.propertyName !== transitionEndObj.current.propertyName
+        if(endObj.propertyName && 
+            e.propertyName !== endObj.propertyName
         )return
         
-        transitionEndObj.current.elArray[lastIndex]?.removeEventListener('transitionend', handler)
-        transitionEndObj.current.fn?.()
+        endObj.elArray[lastIndex]?.removeEventListener('transitionend', handler)
+        endObj.fn?.()
     }
 
     transitionEndHandler.current.handler = handler
     
-    transitionEndHandler.current.handlerEl = transitionEndObj.current.elArray[lastIndex]
-    transitionEndObj.current.elArray[lastIndex]?.addEventListener('transitionend', transitionEndHandler.current.handler)
+    transitionEndHandler.current.handlerEl = endObj.elArray[lastIndex]
+    endObj.elArray[lastIndex]?.addEventListener('transitionend', transitionEndHandler.current.handler)
 }

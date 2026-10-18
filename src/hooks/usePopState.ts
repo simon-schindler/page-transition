@@ -12,6 +12,8 @@ import { pollTransitionStart } from "../functions/pollTransitionStart"
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
     propertyName: 'opacity'|'clip-path'
+    mirror: boolean
+    mirrorElArray: (HTMLDivElement|null)[]
 }
 interface TransitionEndHandler {
     handler: ((e: TransitionEvent) => void) | null
@@ -23,7 +25,7 @@ interface Props{
     transitionEndData: RefObject<TransitionEndData>
     transitionEndHandler: RefObject<TransitionEndHandler>
     reverse: RefObject<{_lock: boolean, lock: boolean}>
-    delay: RefObject<number|null>
+    delayStep: RefObject<number|null>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
@@ -35,7 +37,7 @@ export function usePopState({
     transitionEndData,
     transitionEndHandler,
     reverse,
-    delay,
+    delayStep,
     state,
     useUse,
     resolveUseFn,
@@ -69,7 +71,7 @@ export function usePopState({
                 transitionEndObj: removeEnter,
                 transitionEndHandler,
                 reverse,
-                delay
+                delayStep
             })
             
             state.current = 'navigating'
@@ -132,7 +134,7 @@ export function usePopState({
                                 transitionEndObj: afterExit,
                                 transitionEndHandler,
                                 reverse,
-                                delay
+                                delayStep
                             })
 
                             return
@@ -142,7 +144,7 @@ export function usePopState({
                             transitionEndObj: pop, 
                             transitionEndHandler,
                             reverse,
-                            delay
+                            delayStep
                         })
                         
                         container.current?.classList.remove('enter')

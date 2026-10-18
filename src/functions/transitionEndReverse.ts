@@ -1,13 +1,16 @@
 import type { RefObject } from "react"
 
-import { parseClipPath } from "./parseClipPath"
-import { parseOpacity } from "./parseOpacity"
+import { setDelayReverse } from "./setDelayReverse"
 import { resetDelay } from "./resetDelay"
+
 interface TransitionEndObj{
     elArray: (HTMLDivElement|null)[]
     propertyName: 'opacity' | 'clip-path'
+    mirror: boolean
+    mirrorElArray: (HTMLDivElement|null)[]
     fn: (()=>void)|null 
 }
+
 interface TransitionEndHandler {
     handler: ((e: TransitionEvent) => void) | null
     handlerEl: HTMLDivElement | null
@@ -17,53 +20,49 @@ interface Props{
     transitionEndObj:RefObject<TransitionEndObj>
     transitionEndHandler: RefObject<TransitionEndHandler>
     reverse: RefObject<{_lock: boolean, lock: boolean}>
-    delay: RefObject<number|null>
+    delayStep: RefObject<number|null>
 }
 
 export function transtionEndReverse({
     transitionEndObj,
     transitionEndHandler,
     reverse,
-    delay
+    delayStep
 }:Props){
     
     if(transitionEndHandler.current.handler && 
         transitionEndHandler.current.handlerEl
     )transitionEndHandler.current.handlerEl.removeEventListener('transitionend', transitionEndHandler.current.handler)
     
-    const obj = transitionEndObj.current
+    const endObj = transitionEndObj.current
     
-    const property = transitionEndObj.current.propertyName
     
-    const parseFn={
-        opacity: parseOpacity,
-        'clip-path': parseClipPath
+    setDelayReverse({
+        elArray: endObj.elArray,
+        transitionProperty: endObj.propertyName,
+        delayStep: delayStep.current
+    })
+    if(endObj.mirror){
+        setDelayReverse({
+            elArray: endObj.mirrorElArray,
+            transitionProperty: endObj.propertyName,
+            delayStep: delayStep.current
+        })
     }
-
-    let summ = 0
-
-    obj.elArray.toReversed().forEach((el)=>{
-        if(!el)return
-        
-        const progress = parseFn[property](el)
-       
-        const d  = (delay.current??0) * (progress??0)
-        el.style.transitionDelay = `${summ}s`
-        summ += d
-    }) 
-
-    const firstEl = obj.elArray[0]
+    
+    const firstEl = endObj.elArray[0]
 
     const handler=(e: TransitionEvent)=>{
         
-        if(e.propertyName !== obj.propertyName ||
+        if(e.propertyName !== endObj.propertyName ||
             e.target !== e.currentTarget
         )return
         
-        resetDelay(obj.elArray)
+        resetDelay(endObj.elArray)
+        resetDelay(endObj.mirrorElArray)
         reverse.current.lock = true
         firstEl?.removeEventListener('transitionend', handler)
-        obj.fn?.()
+        endObj.fn?.()
     }
 
     transitionEndHandler.current.handler = handler

@@ -22,10 +22,12 @@ import { pollTransitionStart } from "../functions/pollTransitionStart";
 interface TransitionOptions{
     transitionProperty?: 'opacity'|'clip-path'
     overlayCount?: number
+    mirror?: boolean
 }
 interface DefaultOptions{
     transitionProperty: 'opacity'|'clip-path'
     overlayCount: number
+    mirror: boolean
 }
 interface ProviderProps{
     header?:ReactNode
@@ -42,12 +44,14 @@ export function CssTransitionProvider({
     const defaultOptions:DefaultOptions = {
         transitionProperty: 'opacity',
         overlayCount: 0,
+        mirror: false,
         ...options
     }
 
     const container = useRef<HTMLDivElement|null>(null)
     const overlayWrapper = useRef<HTMLDivElement|null>(null)
     const overlayItems = useRef<(HTMLDivElement|null)[]>([])
+    const mirrorItems = useRef<(HTMLDivElement|null)[]>([])
     
     const pathname = usePathname()
     const currentPathname = useRef(pathname)
@@ -69,21 +73,23 @@ export function CssTransitionProvider({
             return this._lock
         },
         set lock(value: boolean){
-            if(delay.current === 0 || overlayItems.current.length < 2){
+            if(delayStep.current === 0 || overlayItems.current.length < 2){
                 if(this._lock === false)this._lock = true
                 return
             }
             this._lock = value
         }
     })
-    const delay= useRef<number|null>(null)
+    const delayStep = useRef<number|null>(null)
 
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
     const transitionEndHandler = useTransitionEndHandler()
     const transitionEndData = useTransitionEndData({
         elArray: defaultOptions.overlayCount === 0 ? container : overlayItems,
-        transitionProperty: defaultOptions.transitionProperty
+        transitionProperty: defaultOptions.transitionProperty,
+        mirror: defaultOptions.mirror,
+        mirrorElArray: mirrorItems
     })
 
     const pollRafId = useRef<number|null>(null)
@@ -95,7 +101,7 @@ export function CssTransitionProvider({
         transitionEndHandler,
         state,
         reverse,
-        delay,
+        delayStep,
         useUse,
         resolveUseFn,
         pollRafId
@@ -108,7 +114,7 @@ export function CssTransitionProvider({
         transitionEndHandler,
         state,
         reverse,
-        delay,
+        delayStep,
         useUse,
         resolveUseFn,
         basePath,
@@ -129,13 +135,14 @@ export function CssTransitionProvider({
         if(mount.current.mounted === false && 
             mount.current.initPathname === pathname
         ){
+            currentPathname.current = window.location.pathname
             basePath.current = window.location.pathname.slice(0, -pathname.length)
             return
         }
         mount.current.mounted = true
 
-        if(delay.current === null){
-            delay.current = parseDelay(transitionEndData.current.elArray)
+        if(delayStep.current === null && defaultOptions.overlayCount > 1){
+            delayStep.current = parseDelay(transitionEndData.current.elArray)
         }
 
         if(!container.current)return
@@ -144,7 +151,7 @@ export function CssTransitionProvider({
             transitionEndObj: removeEnter,
             transitionEndHandler,
             reverse,
-            delay
+            delayStep
         })
             
         container.current.classList.remove('exit')
@@ -180,13 +187,24 @@ export function CssTransitionProvider({
                 className="overlay-wrapper"
                 >
                     {
-                        Array.from({length: defaultOptions.overlayCount}).map((_,i)=>(
+                        defaultOptions.overlayCount && Array.from({length: defaultOptions.overlayCount}).map((_,i)=>(
                             <div 
                             key={i}
                             ref={(el)=>{
                                 overlayItems.current[i]=el
                             }}
                             className="overlay-item"/>
+                        ))
+                    }
+                    {
+                        defaultOptions.mirror && Array.from({length:defaultOptions.overlayCount}).map((_,i)=>(
+                            <div
+                            key={`mirror${i}`}
+                            ref={(el)=>{
+                                mirrorItems.current[i] = el
+                            }}
+                            className="mirror-item"
+                            />
                         ))
                     }
                 </div>

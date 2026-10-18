@@ -8,5 +8,5 @@ export function parseDelay(elArray: (HTMLDivElement|null)[]):number|null{
 
     const lastDelay = parseFloat(getComputedStyle(lastEl).transitionDelay) 
     
-    return lastDelay / (lastIndex || 1)
+    return lastDelay / lastIndex
 }

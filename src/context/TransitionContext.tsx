@@ -29,6 +29,7 @@ type TransitionProperty = 'opacity'|'clip-path'
 interface TransitionOptions{
     transitionProperty?: TransitionProperty
     overlayCount?: number
+    mirror?: boolean
 }
 interface ProviderProps{
     header?: ReactNode

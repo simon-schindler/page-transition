@@ -51,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 |---|---|---|
 | transitionProperty | "opacity" \| "clip-path" | "opacity" |
 | overlayCount | number | 0 |
+| mirror | boolean | false |
 
 **Prop Descriptions**
 
@@ -61,10 +62,13 @@ Select the transition mode.
 The component rendered outside the transition container.
 
 **options.transitionProperty**  
-Defines which property transitionend waits for.
-
+Defines which property transitionend waits for.  
+  
 **options.overlayCount**  
 Defines how many overlay items should be created.
+
+**options.mirror**
+Creates the same number of items as specified by overlayCount.
 
 
 ```tsx
@@ -112,6 +116,8 @@ Once the transition ends, navigation is performed and the scroll position is res
 After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
 
 For overlay animations, a `.overlay-wrapper` is available. You can add overlay items by setting the `overlayCount` option.
+
+If mirror is set to true, the same number of div elements specified by overlayCount are added to the `.overlaywrapper` with the class `mirror-item`. The transitionend dont wait for mirror items. This ideal for mirror effects.
 
 To access the overlay wrapper and its items, use `useTransitionContext`.
 
@@ -227,6 +233,87 @@ overlayCount: 10
         }
     }
 }
+```
+</details>
+
+<details>
+<summary>Mirrored Staggered Overlays</summary>
+<br/>
+options
+
+```ts
+transitionProperty: "clip-path"  
+overlayCount: 10
+mirror: true
+```
+
+```scss
+[data-transition] .overlay-wrapper{
+    position: fixed;
+    inset: 0;
+
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+[data-transition] .overlay-item{
+    grid-row: 1;
+    background: black;
+  
+    transition: none;
+    will-change: clip-path;
+    clip-path: inset(0 0 100% 0);
+}
+[data-transition].exit .overlay-item{
+    grid-row: 1;
+    clip-path: inset(0% 0 0 0);
+    transition: clip-path 1.2s ease;
+    @for $i from 0 to 10{
+        &:nth-child(#{$i+1}){
+            transition-delay: $i * 0.3s;
+        }
+    }
+}
+[data-transition].enter .overlay-item{
+    grid-row: 1;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1.2s ease;
+    @for $i from 0 to 10{
+        &:nth-child(#{$i+1}){
+            transition-delay: $i * 0.3s;
+        }
+    }
+}
+// .mirror-item
+[data-transition] .mirror-item{
+    grid-row: 2;
+    background: black;
+    
+    transition: none;
+    will-change: clip-path;
+    clip-path: inset(100% 0 0 0);
+}
+[data-transition].exit .mirror-item{
+    grid-row: 2;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 1.2s ease;
+    @for $i from 0 to 10{
+        &:nth-child(#{$i+11}){
+            transition-delay: $i * 0.3s;
+        }
+    }
+}
+[data-transition].enter .mirror-item{
+    grid-row: 2;
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 1.2s ease;
+    @for $i from 0 to 10{
+        &:nth-child(#{$i+11}){
+            transition-delay: $i * 0.3s;
+        }
+    }
+}
+
 ```
 </details>
 
