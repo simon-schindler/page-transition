@@ -7,7 +7,7 @@ interface TransitionEndData{
 }
 
 export function checkTransitionStart(transitionEndData: TransitionEndData, fn:(()=>void)|null){
-    console.log('checkTransitionStart run')
+    
     const parse={
         'opacity': ()=>parseFirstOpacity(transitionEndData.elArray),
         'clip-path': ()=>parseFirstClipPath(transitionEndData.elArray)
