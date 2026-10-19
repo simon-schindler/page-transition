@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.20-000000) ![70.9 KB](https://img.shields.io/badge/70.9_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.20-000000) ![68.7 KB](https://img.shields.io/badge/68.7_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -321,7 +321,7 @@ mirror: true
 
 In manual mode, you can control the transition using `useTransitionContext`.
 
-After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation. Once `state.current` is set to `entering`, the new page has loaded. After the animation finishes, `state.current` should be set to `idle`.
+After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation. Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
 
 
 ```ts
