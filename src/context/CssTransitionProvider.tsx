@@ -187,7 +187,7 @@ export function CssTransitionProvider({
                 className="overlay-wrapper"
                 >
                     {
-                        defaultOptions.overlayCount && Array.from({length: defaultOptions.overlayCount}).map((_,i)=>(
+                        defaultOptions.overlayCount > 0 && Array.from({length: defaultOptions.overlayCount}).map((_,i)=>(
                             <div 
                             key={i}
                             ref={(el)=>{
