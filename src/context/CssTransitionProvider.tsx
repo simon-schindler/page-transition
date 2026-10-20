@@ -93,6 +93,9 @@ export function CssTransitionProvider({
     })
 
     const pollRafId = useRef<number|null>(null)
+
+    const rafId = useRef<number|null>(null)
+    const rejectFn = useRef<(()=>void)|null>(null)
     
     usePopState({
         container,
@@ -104,7 +107,9 @@ export function CssTransitionProvider({
         delayStep,
         useUse,
         resolveUseFn,
-        pollRafId
+        pollRafId,
+        rafId,
+        rejectFn
     })
     useHandleLinkClick({
         container,
@@ -118,7 +123,9 @@ export function CssTransitionProvider({
         useUse,
         resolveUseFn,
         basePath,
-        pollRafId
+        pollRafId,
+        rafId,
+        rejectFn
     })
     useScrollRestoration()
 

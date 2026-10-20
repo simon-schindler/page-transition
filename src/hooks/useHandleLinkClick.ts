@@ -37,6 +37,8 @@ interface Props{
     resolveUseFn: RefObject<(()=>void)|null>
     basePath: RefObject<string|null>
     pollRafId: RefObject<number|null>
+    rafId: RefObject<number|null>
+    rejectFn: RefObject<(()=>void)|null>
 }
 export function useHandleLinkClick({
     container,
@@ -50,15 +52,14 @@ export function useHandleLinkClick({
     useUse,
     resolveUseFn,
     basePath,
-    pollRafId
+    pollRafId,
+    rafId,
+    rejectFn
 }:Props){
     
     const router = useRouter()
     const afterExitFn = useRef<(()=>void)|null>(null)
     const nextPage = useRef<string|null>(null)
-
-    const rafId = useRef<number|null>(null)
-    const rejectFn = useRef<(()=>void)|null>(null)
 
     const push = useTransitionEndObj({
         transitionEndData,
@@ -181,7 +182,7 @@ export function useHandleLinkClick({
                         rejectFn,
                         elArray,
                         transitionProperty: transitionEndData.current.transitionProperty,
-                        target: 0
+                        target: 1
                     }).catch(()=>{})
 
                 }).catch(()=>{})

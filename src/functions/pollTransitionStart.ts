@@ -3,7 +3,7 @@ import type { RefObject } from "react";
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    transitionProperty: 'opacity'|'clip-path'
 }
 
 interface Props{

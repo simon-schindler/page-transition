@@ -33,6 +33,8 @@ interface Props{
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
     pollRafId: RefObject<number|null>
+    rafId: RefObject<number|null>
+    rejectFn: RefObject<(()=>void)|null>
 }
 export function usePopState({
     container,
@@ -44,13 +46,12 @@ export function usePopState({
     state,
     useUse,
     resolveUseFn,
-    pollRafId
+    pollRafId,
+    rafId,
+    rejectFn
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
-    
-    const rafId = useRef<number|null>(null)
-    const rejectFn = useRef<(()=>void)|null>(null)
     
     if(promise){
         useUse.current = true
