@@ -5,7 +5,7 @@ import { resetDelay } from "./resetDelay"
 
 interface TransitionEndObj{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity' | 'clip-path'
+    transitionProperty: 'opacity' | 'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
     fn: (()=>void)|null 
@@ -39,13 +39,13 @@ export function transtionEndReverse({
     
     setDelayReverse({
         elArray: endObj.elArray,
-        transitionProperty: endObj.propertyName,
+        transitionProperty: endObj.transitionProperty,
         delayStep: delayStep.current
     })
     if(endObj.mirror){
         setDelayReverse({
             elArray: endObj.mirrorElArray,
-            transitionProperty: endObj.propertyName,
+            transitionProperty: endObj.transitionProperty,
             delayStep: delayStep.current
         })
     }
@@ -54,7 +54,7 @@ export function transtionEndReverse({
 
     const handler=(e: TransitionEvent)=>{
         
-        if(e.propertyName !== endObj.propertyName ||
+        if(e.propertyName !== endObj.transitionProperty ||
             e.target !== e.currentTarget
         )return
         

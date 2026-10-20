@@ -9,9 +9,12 @@ import { transitionEnd } from "../functions/transitionEnd"
 
 import { pollTransitionStart } from "../functions/pollTransitionStart"
 
+import { updatePlaybackRate } from "../functions/updatePlaybackRate"
+import { setPlaybackRate } from "../functions/setPlaybackRate"
+
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
 }
@@ -45,6 +48,9 @@ export function usePopState({
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
+    
+    const rafId = useRef<number|null>(null)
+    const rejectFn = useRef<(()=>void)|null>(null)
     
     if(promise){
         useUse.current = true
@@ -137,6 +143,48 @@ export function usePopState({
                                 delayStep
                             })
 
+                            return
+                        }
+                        if(state.current === 'entering'){
+                            let elArray = []
+                            if(transitionEndData.current.mirror){
+                                elArray = [...transitionEndData.current.mirrorElArray, ...transitionEndData.current.elArray]
+                            }else{
+                                elArray = [...transitionEndData.current.elArray]
+                            }
+                            updatePlaybackRate({
+                                rafId,
+                                rejectFn,
+                                elArray,
+                                transitionProperty: transitionEndData.current.transitionProperty,
+                                target: 0
+                            }).then(()=>{
+                                transitionEnd({
+                                    transitionEndObj: pop, 
+                                    transitionEndHandler,
+                                    reverse,
+                                    delayStep
+                                })
+                                container.current?.classList.remove('enter')
+                                container.current?.classList.add('exit')
+                                
+                                state.current='exiting'
+
+                                setPlaybackRate({
+                                    elArray,
+                                    transitionProperty: transitionEndData.current.transitionProperty,
+                                    value: 0
+                                })
+                                updatePlaybackRate({
+                                    rafId,
+                                    rejectFn,
+                                    elArray,
+                                    transitionProperty: transitionEndData.current.transitionProperty,
+                                    target: 1
+                                }).catch(()=>{})
+                                
+                            }).catch(()=>{})
+                            
                             return
                         }
                        

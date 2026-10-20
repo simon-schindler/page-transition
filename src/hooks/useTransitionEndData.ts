@@ -6,7 +6,7 @@ import type { RefObject } from "react"
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
 }
@@ -26,7 +26,7 @@ export function useTransitionEndData({
     
     const transitionEndData = useRef<TransitionEndData>({
         elArray: [],
-        propertyName: transitionProperty,
+        transitionProperty,
         mirror,
         mirrorElArray: []
     })

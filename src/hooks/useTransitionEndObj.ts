@@ -4,7 +4,7 @@ import type { RefObject } from "react";
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
 }
@@ -14,7 +14,7 @@ interface Props{
 }  
 interface TransitionEndObj{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
     fn: (()=>void)|null
@@ -25,7 +25,7 @@ export function useTransitionEndObj({transitionEndData, fn}:Props){
     
     const transitionEndObj=useRef<TransitionEndObj>({
         elArray: [],
-        propertyName: transitionEndData.current.propertyName,
+        transitionProperty: transitionEndData.current.transitionProperty,
         mirror:transitionEndData.current.mirror,
         mirrorElArray:[],
         fn: null,

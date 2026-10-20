@@ -4,7 +4,7 @@ import { transtionEndReverse } from "./transitionEndReverse"
 
 interface TransitionEndObj{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity' | 'clip-path'
+    transitionProperty: 'opacity' | 'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
     fn: (()=>void)|null 
@@ -51,8 +51,8 @@ export function transitionEnd({
         
         if(e.target !== e.currentTarget)return
         
-        if(endObj.propertyName && 
-            e.propertyName !== endObj.propertyName
+        if(endObj.transitionProperty && 
+            e.propertyName !== endObj.transitionProperty
         )return
         
         endObj.elArray[lastIndex]?.removeEventListener('transitionend', handler)

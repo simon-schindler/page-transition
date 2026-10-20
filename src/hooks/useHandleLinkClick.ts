@@ -11,9 +11,12 @@ import { transitionEnd } from "../functions/transitionEnd"
 
 import { pollTransitionStart } from "../functions/pollTransitionStart"
 
+import { updatePlaybackRate } from "../functions/updatePlaybackRate"
+import { setPlaybackRate } from "../functions/setPlaybackRate"
+
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
 }
@@ -53,6 +56,9 @@ export function useHandleLinkClick({
     const router = useRouter()
     const afterExitFn = useRef<(()=>void)|null>(null)
     const nextPage = useRef<string|null>(null)
+
+    const rafId = useRef<number|null>(null)
+    const rejectFn = useRef<(()=>void)|null>(null)
 
     const push = useTransitionEndObj({
         transitionEndData,
@@ -137,6 +143,49 @@ export function useHandleLinkClick({
                     delayStep
                 })
                 
+                return
+            }
+            if(state.current === 'entering'){
+                let elArray = []
+                if(transitionEndData.current.mirror){
+                    elArray = [...transitionEndData.current.mirrorElArray, ...transitionEndData.current.elArray]
+                }else{
+                    elArray = [...transitionEndData.current.elArray]
+                }
+                updatePlaybackRate({
+                    rafId,
+                    rejectFn,
+                    elArray,
+                    transitionProperty: transitionEndData.current.transitionProperty,
+                    target: 0
+                }).then(()=>{
+                    transitionEnd({
+                        transitionEndObj: push, 
+                        transitionEndHandler,
+                        reverse,
+                        delayStep
+                    })
+
+                    container.current?.classList.remove('enter')
+                    container.current?.classList.add('exit')
+                                            
+                    state.current='exiting'
+            
+                    setPlaybackRate({
+                        elArray,
+                        transitionProperty: transitionEndData.current.transitionProperty,
+                        value: 0
+                    })
+                    updatePlaybackRate({
+                        rafId,
+                        rejectFn,
+                        elArray,
+                        transitionProperty: transitionEndData.current.transitionProperty,
+                        target: 0
+                    }).catch(()=>{})
+
+                }).catch(()=>{})
+                                        
                 return
             }
             

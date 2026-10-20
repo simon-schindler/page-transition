@@ -3,7 +3,7 @@ import { parseFirstClipPath } from "./parseFirstClipPath";
 
 interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    propertyName: 'opacity'|'clip-path'
+    transitionProperty: 'opacity'|'clip-path'
 }
 
 export function checkTransitionStart(transitionEndData: TransitionEndData, fn:(()=>void)|null){
@@ -13,7 +13,7 @@ export function checkTransitionStart(transitionEndData: TransitionEndData, fn:((
         'clip-path': ()=>parseFirstClipPath(transitionEndData.elArray)
     }
     
-    if(parse[transitionEndData.propertyName]()){
+    if(parse[transitionEndData.transitionProperty]()){
         fn?.()
         return true
     }else{
