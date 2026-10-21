@@ -17,8 +17,6 @@ interface TransitionEndData{
     transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[],
-    delayStep: number
-    duration: number
 }
 interface TransitionEndHandler {
     handler: ((e: TransitionEvent) => void) | null
@@ -36,6 +34,8 @@ interface Props{
     pollRafId: RefObject<number|null>
     rafId: RefObject<number|null>
     rejectFn: RefObject<(()=>void)|null>
+    delayStep: RefObject<number|null>
+    duration: RefObject<number|null>
 }
 export function usePopState({
     container,
@@ -48,7 +48,9 @@ export function usePopState({
     resolveUseFn,
     pollRafId,
     rafId,
-    rejectFn
+    rejectFn,
+    delayStep,
+    duration
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
@@ -77,7 +79,8 @@ export function usePopState({
             transitionEnd({
                 transitionEndObj: removeEnter,
                 transitionEndHandler,
-                reverse
+                reverse,
+                delayStep
             })
             
             state.current = 'navigating'
@@ -132,7 +135,8 @@ export function usePopState({
             transitionEnd({
                 transitionEndObj: pop,
                 transitionEndHandler,
-                reverse
+                reverse,
+                delayStep
             })  
         }
     })
@@ -162,13 +166,14 @@ export function usePopState({
                             resolveNavigating()
                         }
                     }).then(()=>{ 
-                        console.log('not navigating')
+                        
                         if(currentPathname.current === window.location.pathname){
                             
                             transitionEnd({
                                 transitionEndObj: afterExit,
                                 transitionEndHandler,
-                                reverse
+                                reverse,
+                                delayStep
                             })
 
                             return
@@ -177,7 +182,8 @@ export function usePopState({
                             transitionEnd({
                                 transitionEndObj: afterEntering,
                                 transitionEndHandler,
-                                reverse
+                                reverse,
+                                delayStep
                             })
                             
                             let elArray = []
@@ -192,13 +198,14 @@ export function usePopState({
                                 elArray,
                                 transitionProperty: transitionEndData.current.transitionProperty,
                                 target: 0,
-                                duration: transitionEndData.current.duration
+                                duration: duration.current ?? 0
                             }).then(()=>{
                                 
                                 transitionEnd({
                                     transitionEndObj: pop, 
                                     transitionEndHandler,
-                                    reverse
+                                    reverse,
+                                    delayStep
                                 })
                                 
                                 container.current?.classList.remove('enter')
@@ -217,7 +224,7 @@ export function usePopState({
                                     elArray,
                                     transitionProperty: transitionEndData.current.transitionProperty,
                                     target: 1,
-                                    duration: transitionEndData.current.duration
+                                    duration: duration.current ?? 0
                                 }).catch(()=>{})
                                 
                             }).catch(()=>{})
@@ -228,7 +235,8 @@ export function usePopState({
                         transitionEnd({
                             transitionEndObj: pop, 
                             transitionEndHandler,
-                            reverse
+                            reverse,
+                            delayStep
                         })
                         
                         container.current?.classList.remove('enter')

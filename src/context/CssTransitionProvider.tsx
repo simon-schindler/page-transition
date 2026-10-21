@@ -110,7 +110,9 @@ export function CssTransitionProvider({
         resolveUseFn,
         pollRafId,
         rafId,
-        rejectFn
+        rejectFn,
+        delayStep,
+        duration
     })
     useHandleLinkClick({
         container,
@@ -125,7 +127,9 @@ export function CssTransitionProvider({
         basePath,
         pollRafId,
         rafId,
-        rejectFn
+        rejectFn,
+        delayStep,
+        duration
     })
     useScrollRestoration()
 
@@ -150,11 +154,9 @@ export function CssTransitionProvider({
 
         if(delayStep.current === null && defaultOptions.overlayCount > 1){
             delayStep.current = parseDelay(transitionEndData.current.elArray)
-            transitionEndData.current.delayStep = delayStep.current ?? 0
         }
         if(duration.current === null){
             duration.current = parseDuration(transitionEndData.current.elArray[0])
-            transitionEndData.current.duration = duration.current ?? 0
         }
 
         if(!container.current)return
@@ -162,7 +164,8 @@ export function CssTransitionProvider({
         transitionEnd({
             transitionEndObj: removeEnter,
             transitionEndHandler,
-            reverse
+            reverse,
+            delayStep
         })
             
         container.current.classList.remove('exit')

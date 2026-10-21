@@ -19,8 +19,6 @@ interface TransitionEndData{
     transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
-    delayStep: number
-    duration: number
 }
 interface TransitionEndHandler {
     handler: ((e: TransitionEvent) => void) | null
@@ -40,6 +38,8 @@ interface Props{
     pollRafId: RefObject<number|null>
     rafId: RefObject<number|null>
     rejectFn: RefObject<(()=>void)|null>
+    delayStep: RefObject<number|null>
+    duration: RefObject<number|null>
 }
 export function useHandleLinkClick({
     container,
@@ -54,7 +54,9 @@ export function useHandleLinkClick({
     basePath,
     pollRafId,
     rafId,
-    rejectFn
+    rejectFn,
+    delayStep,
+    duration
 }:Props){
     
     const router = useRouter()
@@ -86,7 +88,8 @@ export function useHandleLinkClick({
             transitionEnd({
                 transitionEndObj: removeEnter,
                 transitionEndHandler,
-                reverse
+                reverse,
+                delayStep
             })
 
             if(useUse.current){
@@ -114,7 +117,6 @@ export function useHandleLinkClick({
         transitionEndData,
         fn: ()=>{
             
-            console.log('afterEntering transitionEnd')
             if(rafId.current){
                 cancelAnimationFrame(rafId.current)
                 rafId.current = null
@@ -122,18 +124,15 @@ export function useHandleLinkClick({
             rejectFn.current?.()
             
             container.current?.classList.remove('enter')
-            
-            requestAnimationFrame(()=>{
-                requestAnimationFrame(()=>{
-                    container.current?.classList.add('exit')
-                })
-            })
-            
+            container.current?.classList.add('exit')
+             
             state.current='exiting'
+
             transitionEnd({
                 transitionEndObj: push,
                 transitionEndHandler,
-                reverse
+                reverse,
+                delayStep
             })  
             
         }
@@ -167,7 +166,8 @@ export function useHandleLinkClick({
                 transitionEnd({
                     transitionEndObj: afterExit,
                     transitionEndHandler,
-                    reverse
+                    reverse,
+                    delayStep
                 })
                 
                 return
@@ -177,7 +177,8 @@ export function useHandleLinkClick({
                 transitionEnd({
                     transitionEndObj: afterEntering, 
                     transitionEndHandler,
-                    reverse
+                    reverse,
+                    delayStep
                 })
                 
                 let elArray = []
@@ -192,12 +193,13 @@ export function useHandleLinkClick({
                     elArray,
                     transitionProperty: transitionEndData.current.transitionProperty,
                     target: 0,
-                    duration: transitionEndData.current.duration
+                    duration: duration.current ?? 0
                 }).then(()=>{
                     transitionEnd({
                         transitionEndObj: push, 
                         transitionEndHandler,
-                        reverse
+                        reverse,
+                        delayStep
                     })
 
                     container.current?.classList.remove('enter')
@@ -216,7 +218,7 @@ export function useHandleLinkClick({
                         elArray,
                         transitionProperty: transitionEndData.current.transitionProperty,
                         target: 1,
-                        duration: transitionEndData.current.duration
+                        duration: duration.current ?? 0
                     }).catch(()=>{})
 
                 }).catch(()=>{})
@@ -227,7 +229,8 @@ export function useHandleLinkClick({
             transitionEnd({
                 transitionEndObj: push,
                 transitionEndHandler,
-                reverse
+                reverse,
+                delayStep
             })
             
             container.current?.classList.remove('enter')
