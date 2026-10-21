@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.22-000000) ![68.7 KB](https://img.shields.io/badge/68.7_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.35-000000) ![78.5 KB](https://img.shields.io/badge/78.5_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -117,7 +117,9 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
 
 For overlay animations, a `.overlay-wrapper` is available. You can add overlay items by setting the `overlayCount` option.
 
-If mirror is set to true, the same number of div elements specified by overlayCount are added to the `.overlaywrapper` with the class `mirror-item`. The transitionend dont wait for mirror items. This ideal for mirror effects.
+If mirror is set to true, the same number of div elements specified by `overlayCount` are added to the `.overlay-wrapper` with the class `mirror-item`. The transitionend dont wait for mirror items. This ideal for mirror effects.  
+  
+  *At the moment, it only supports duration and delay in seconds.*
 
 To access the overlay wrapper and its items, use `useTransitionContext`.
 
@@ -262,11 +264,11 @@ mirror: true
   
     transition: none;
     will-change: clip-path;
-    clip-path: inset(0 0 100% 0);
+    clip-path: inset(0 -1px 100% -1px);
 }
 [data-transition].exit .overlay-item{
     grid-row: 1;
-    clip-path: inset(0% 0 0 0);
+    clip-path: inset(0 -1px 0 -1px);
     transition: clip-path 1.2s ease;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
@@ -276,7 +278,7 @@ mirror: true
 }
 [data-transition].enter .overlay-item{
     grid-row: 1;
-    clip-path: inset(0 0 100% 0);
+    clip-path: inset(0 -1px 100% -1px);
     transition: clip-path 1.2s ease;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
@@ -295,7 +297,7 @@ mirror: true
 }
 [data-transition].exit .mirror-item{
     grid-row: 2;
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(0 -1px 0 -1px);
     transition: clip-path 1.2s ease;
     @for $i from 0 to 10{
         &:nth-child(#{$i+11}){
@@ -305,7 +307,7 @@ mirror: true
 }
 [data-transition].enter .mirror-item{
     grid-row: 2;
-    clip-path: inset(100% 0 0 0);
+    clip-path: inset(100% -1px 0 -1px);
     transition: clip-path 1.2s ease;
     @for $i from 0 to 10{
         &:nth-child(#{$i+11}){
