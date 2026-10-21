@@ -200,13 +200,22 @@ export function usePopState({
                                 target: 0,
                                 duration: duration.current ?? 0
                             }).then(()=>{
+                                if(currentPathname.current === window.location.pathname){
+                                    transitionEnd({
+                                        transitionEndObj: afterExit, 
+                                        transitionEndHandler,
+                                        reverse,
+                                        delayStep
+                                    })  
+                                }else{
+                                    transitionEnd({
+                                        transitionEndObj: pop, 
+                                        transitionEndHandler,
+                                        reverse,
+                                        delayStep
+                                    })
+                                }
                                 
-                                transitionEnd({
-                                    transitionEndObj: pop, 
-                                    transitionEndHandler,
-                                    reverse,
-                                    delayStep
-                                })
                                 
                                 container.current?.classList.remove('enter')
                                 container.current?.classList.add('exit')

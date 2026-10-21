@@ -195,12 +195,22 @@ export function useHandleLinkClick({
                     target: 0,
                     duration: duration.current ?? 0
                 }).then(()=>{
-                    transitionEnd({
-                        transitionEndObj: push, 
-                        transitionEndHandler,
-                        reverse,
-                        delayStep
-                    })
+                    if(basePathUrl === currentPathname.current){
+                        transitionEnd({
+                            transitionEndObj: afterExit, 
+                            transitionEndHandler,
+                            reverse,
+                            delayStep
+                        })
+                    }else{
+                        transitionEnd({
+                            transitionEndObj: push, 
+                            transitionEndHandler,
+                            reverse,
+                            delayStep
+                        })
+                    }
+                    
 
                     container.current?.classList.remove('enter')
                     container.current?.classList.add('exit')
