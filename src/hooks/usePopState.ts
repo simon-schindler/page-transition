@@ -124,14 +124,10 @@ export function usePopState({
             rejectFn.current?.()
             
             container.current?.classList.remove('enter')
-            
-            requestAnimationFrame(()=>{
-                requestAnimationFrame(()=>{
-                    container.current?.classList.add('exit')
-                })
-            })
-            
+            container.current?.classList.add('exit')
+             
             state.current='exiting'
+
             transitionEnd({
                 transitionEndObj: pop,
                 transitionEndHandler,
@@ -153,7 +149,7 @@ export function usePopState({
                     new Promise<void>((resolveNavigating)=>{
                         
                         if(state.current === "navigating"){
-                            console.log('navigating')
+                            
                             if(currentPathname.current !== window.location.pathname){
                                 resolveFn.current?.()
                                 setPromise(null)
@@ -215,7 +211,6 @@ export function usePopState({
                                         delayStep
                                     })
                                 }
-                                
                                 
                                 container.current?.classList.remove('enter')
                                 container.current?.classList.add('exit')
