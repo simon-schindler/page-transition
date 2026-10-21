@@ -8,6 +8,8 @@ interface TransitionEndObj{
     transitionProperty: 'opacity' | 'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
+    delayStep: number
+    duration: number
     fn: (()=>void)|null 
 }
 
@@ -20,14 +22,12 @@ interface Props{
     transitionEndObj:RefObject<TransitionEndObj>
     transitionEndHandler: RefObject<TransitionEndHandler>
     reverse: RefObject<{_lock: boolean, lock: boolean}>
-    delayStep: RefObject<number|null>
 }
 
 export function transtionEndReverse({
     transitionEndObj,
     transitionEndHandler,
-    reverse,
-    delayStep
+    reverse
 }:Props){
     
     if(transitionEndHandler.current.handler && 
@@ -36,24 +36,23 @@ export function transtionEndReverse({
     
     const endObj = transitionEndObj.current
     
-    
     setDelayReverse({
         elArray: endObj.elArray,
         transitionProperty: endObj.transitionProperty,
-        delayStep: delayStep.current
+        delayStep: endObj.delayStep
     })
     if(endObj.mirror){
         setDelayReverse({
             elArray: endObj.mirrorElArray,
             transitionProperty: endObj.transitionProperty,
-            delayStep: delayStep.current
+            delayStep: endObj.delayStep
         })
     }
     
     const firstEl = endObj.elArray[0]
 
     const handler=(e: TransitionEvent)=>{
-        
+        console.log('transitionEndReverse handler fired')
         if(e.propertyName !== endObj.transitionProperty ||
             e.target !== e.currentTarget
         )return

@@ -16,7 +16,9 @@ interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
     transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[]
+    mirrorElArray: (HTMLDivElement|null)[],
+    delayStep: number
+    duration: number
 }
 interface TransitionEndHandler {
     handler: ((e: TransitionEvent) => void) | null
@@ -28,7 +30,6 @@ interface Props{
     transitionEndData: RefObject<TransitionEndData>
     transitionEndHandler: RefObject<TransitionEndHandler>
     reverse: RefObject<{_lock: boolean, lock: boolean}>
-    delayStep: RefObject<number|null>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
@@ -42,7 +43,6 @@ export function usePopState({
     transitionEndData,
     transitionEndHandler,
     reverse,
-    delayStep,
     state,
     useUse,
     resolveUseFn,
@@ -77,8 +77,7 @@ export function usePopState({
             transitionEnd({
                 transitionEndObj: removeEnter,
                 transitionEndHandler,
-                reverse,
-                delayStep
+                reverse
             })
             
             state.current = 'navigating'
@@ -110,6 +109,33 @@ export function usePopState({
             useUse.current = false
         }
     })
+
+    const afterEntering = useTransitionEndObj({
+        transitionEndData,
+        fn: ()=>{
+
+            if(rafId.current){
+                cancelAnimationFrame(rafId.current)
+                rafId.current = null
+            }
+            rejectFn.current?.()
+            
+            container.current?.classList.remove('enter')
+            
+            requestAnimationFrame(()=>{
+                requestAnimationFrame(()=>{
+                    container.current?.classList.add('exit')
+                })
+            })
+            
+            state.current='exiting'
+            transitionEnd({
+                transitionEndObj: pop,
+                transitionEndHandler,
+                reverse
+            })  
+        }
+    })
     
     useEffect(()=>{
         
@@ -123,6 +149,7 @@ export function usePopState({
                     new Promise<void>((resolveNavigating)=>{
                         
                         if(state.current === "navigating"){
+                            console.log('navigating')
                             if(currentPathname.current !== window.location.pathname){
                                 resolveFn.current?.()
                                 setPromise(null)
@@ -135,18 +162,24 @@ export function usePopState({
                             resolveNavigating()
                         }
                     }).then(()=>{ 
-                        
+                        console.log('not navigating')
                         if(currentPathname.current === window.location.pathname){
+                            
                             transitionEnd({
                                 transitionEndObj: afterExit,
                                 transitionEndHandler,
-                                reverse,
-                                delayStep
+                                reverse
                             })
 
                             return
                         }
                         if(state.current === 'entering'){
+                            transitionEnd({
+                                transitionEndObj: afterEntering,
+                                transitionEndHandler,
+                                reverse
+                            })
+                            
                             let elArray = []
                             if(transitionEndData.current.mirror){
                                 elArray = [...transitionEndData.current.mirrorElArray, ...transitionEndData.current.elArray]
@@ -158,14 +191,16 @@ export function usePopState({
                                 rejectFn,
                                 elArray,
                                 transitionProperty: transitionEndData.current.transitionProperty,
-                                target: 0
+                                target: 0,
+                                duration: transitionEndData.current.duration
                             }).then(()=>{
+                                
                                 transitionEnd({
                                     transitionEndObj: pop, 
                                     transitionEndHandler,
-                                    reverse,
-                                    delayStep
+                                    reverse
                                 })
+                                
                                 container.current?.classList.remove('enter')
                                 container.current?.classList.add('exit')
                                 
@@ -181,7 +216,8 @@ export function usePopState({
                                     rejectFn,
                                     elArray,
                                     transitionProperty: transitionEndData.current.transitionProperty,
-                                    target: 1
+                                    target: 1,
+                                    duration: transitionEndData.current.duration
                                 }).catch(()=>{})
                                 
                             }).catch(()=>{})
@@ -192,8 +228,7 @@ export function usePopState({
                         transitionEnd({
                             transitionEndObj: pop, 
                             transitionEndHandler,
-                            reverse,
-                            delayStep
+                            reverse
                         })
                         
                         container.current?.classList.remove('enter')

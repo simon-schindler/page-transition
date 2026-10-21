@@ -1,23 +1,23 @@
-import type { Ref, RefObject } from "react";
+import type { RefObject } from "react";
 
 interface Props{
     rafId: RefObject<number|null>
     rejectFn: RefObject<(()=>void)|null>
     elArray: (HTMLDivElement|null)[]
     transitionProperty: 'opacity'|'clip-path'
-    target: number
+    target: number,
+    duration: number
 }
 
-export function updatePlaybackRate({rafId, rejectFn, elArray, transitionProperty, target}:Props):Promise<void>{
+export function updatePlaybackRate({rafId, rejectFn, elArray, transitionProperty, target, duration}:Props):Promise<void>{
     
     if(rafId.current !== null)cancelAnimationFrame(rafId.current)
     
-    let duration:number = 0
-    if(elArray[0]){
-        duration = (parseFloat(getComputedStyle(elArray[0]).transitionDuration)*1000)/ 2
-    }
+    if(duration === 0)return Promise.resolve()
+    const d = (duration * 1000)/2
+    
     let progress = 0
-    let summ = target ? 0: duration 
+    let summ = target ? 0: d
     
     let animationArray:CSSTransition[] = []
     
@@ -44,11 +44,11 @@ export function updatePlaybackRate({rafId, rejectFn, elArray, transitionProperty
             const dt = now - before
             before = now
 
-            summ = target? Math.min(summ + dt, duration):Math.max(summ - dt, 0)
+            summ = target? Math.min(summ + dt, d):Math.max(summ - dt, 0)
         
-            progress = summ / duration
+            progress = summ / d
 
-            animationArray.forEach((obj:CSSTransition,i)=>{
+            animationArray.forEach((obj:CSSTransition)=>{
                 obj.updatePlaybackRate(progress)
             })
             

@@ -17,6 +17,7 @@ import { useScrollRestoration } from "../hooks/useScrollRestoration";
 import { usePopState } from "../hooks/usePopState";
 
 import { parseDelay } from "../functions/parseDelay";
+import { parseDuration } from "../functions/parseDuration";
 import { pollTransitionStart } from "../functions/pollTransitionStart"; 
 
 interface TransitionOptions{
@@ -81,6 +82,7 @@ export function CssTransitionProvider({
         }
     })
     const delayStep = useRef<number|null>(null)
+    const duration = useRef<number|null>(null)
 
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
@@ -104,7 +106,6 @@ export function CssTransitionProvider({
         transitionEndHandler,
         state,
         reverse,
-        delayStep,
         useUse,
         resolveUseFn,
         pollRafId,
@@ -119,7 +120,6 @@ export function CssTransitionProvider({
         transitionEndHandler,
         state,
         reverse,
-        delayStep,
         useUse,
         resolveUseFn,
         basePath,
@@ -150,6 +150,11 @@ export function CssTransitionProvider({
 
         if(delayStep.current === null && defaultOptions.overlayCount > 1){
             delayStep.current = parseDelay(transitionEndData.current.elArray)
+            transitionEndData.current.delayStep = delayStep.current ?? 0
+        }
+        if(duration.current === null){
+            duration.current = parseDuration(transitionEndData.current.elArray[0])
+            transitionEndData.current.duration = duration.current ?? 0
         }
 
         if(!container.current)return
@@ -157,8 +162,7 @@ export function CssTransitionProvider({
         transitionEnd({
             transitionEndObj: removeEnter,
             transitionEndHandler,
-            reverse,
-            delayStep
+            reverse
         })
             
         container.current.classList.remove('exit')

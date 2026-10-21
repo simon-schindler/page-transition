@@ -6,7 +6,9 @@ interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
     transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[]
+    mirrorElArray: (HTMLDivElement|null)[],
+    delayStep: number
+    duration: number
 }
 interface Props{
     transitionEndData: RefObject<TransitionEndData>
@@ -16,7 +18,9 @@ interface TransitionEndObj{
     elArray: (HTMLDivElement|null)[]
     transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[]
+    mirrorElArray: (HTMLDivElement|null)[],
+    delayStep: number
+    duration: number
     fn: (()=>void)|null
     
 }
@@ -29,6 +33,8 @@ export function useTransitionEndObj({transitionEndData, fn}:Props){
         mirror:transitionEndData.current.mirror,
         mirrorElArray:[],
         fn: null,
+        delayStep: transitionEndData.current.delayStep,
+        duration: transitionEndData.current.duration
         
     })
 

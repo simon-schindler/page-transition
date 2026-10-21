@@ -19,6 +19,8 @@ interface TransitionEndData{
     transitionProperty: 'opacity'|'clip-path'
     mirror: boolean
     mirrorElArray: (HTMLDivElement|null)[]
+    delayStep: number
+    duration: number
 }
 interface TransitionEndHandler {
     handler: ((e: TransitionEvent) => void) | null
@@ -32,7 +34,6 @@ interface Props{
     transitionEndHandler:RefObject<TransitionEndHandler>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     reverse: RefObject<{_lock: boolean, lock: boolean}>
-    delayStep: RefObject<number|null>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
     basePath: RefObject<string|null>
@@ -47,7 +48,6 @@ export function useHandleLinkClick({
     transitionEndData,
     transitionEndHandler,
     reverse,
-    delayStep,
     state, 
     useUse,
     resolveUseFn,
@@ -86,8 +86,7 @@ export function useHandleLinkClick({
             transitionEnd({
                 transitionEndObj: removeEnter,
                 transitionEndHandler,
-                reverse,
-                delayStep
+                reverse
             })
 
             if(useUse.current){
@@ -109,6 +108,34 @@ export function useHandleLinkClick({
                 }
             })
 
+        }
+    })
+    const afterEntering = useTransitionEndObj({
+        transitionEndData,
+        fn: ()=>{
+            
+            console.log('afterEntering transitionEnd')
+            if(rafId.current){
+                cancelAnimationFrame(rafId.current)
+                rafId.current = null
+            }
+            rejectFn.current?.()
+            
+            container.current?.classList.remove('enter')
+            
+            requestAnimationFrame(()=>{
+                requestAnimationFrame(()=>{
+                    container.current?.classList.add('exit')
+                })
+            })
+            
+            state.current='exiting'
+            transitionEnd({
+                transitionEndObj: push,
+                transitionEndHandler,
+                reverse
+            })  
+            
         }
     })
     
@@ -140,13 +167,19 @@ export function useHandleLinkClick({
                 transitionEnd({
                     transitionEndObj: afterExit,
                     transitionEndHandler,
-                    reverse,
-                    delayStep
+                    reverse
                 })
                 
                 return
             }
             if(state.current === 'entering'){
+                
+                transitionEnd({
+                    transitionEndObj: afterEntering, 
+                    transitionEndHandler,
+                    reverse
+                })
+                
                 let elArray = []
                 if(transitionEndData.current.mirror){
                     elArray = [...transitionEndData.current.mirrorElArray, ...transitionEndData.current.elArray]
@@ -158,13 +191,13 @@ export function useHandleLinkClick({
                     rejectFn,
                     elArray,
                     transitionProperty: transitionEndData.current.transitionProperty,
-                    target: 0
+                    target: 0,
+                    duration: transitionEndData.current.duration
                 }).then(()=>{
                     transitionEnd({
                         transitionEndObj: push, 
                         transitionEndHandler,
-                        reverse,
-                        delayStep
+                        reverse
                     })
 
                     container.current?.classList.remove('enter')
@@ -182,7 +215,8 @@ export function useHandleLinkClick({
                         rejectFn,
                         elArray,
                         transitionProperty: transitionEndData.current.transitionProperty,
-                        target: 1
+                        target: 1,
+                        duration: transitionEndData.current.duration
                     }).catch(()=>{})
 
                 }).catch(()=>{})
@@ -193,8 +227,7 @@ export function useHandleLinkClick({
             transitionEnd({
                 transitionEndObj: push,
                 transitionEndHandler,
-                reverse,
-                delayStep
+                reverse
             })
             
             container.current?.classList.remove('enter')
