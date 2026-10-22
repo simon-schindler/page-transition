@@ -14,13 +14,13 @@ export function updatePlaybackRate({rafId, rejectFn, elArray, transitionProperty
     if(rafId.current !== null)cancelAnimationFrame(rafId.current)
     
     if(duration === 0)return Promise.resolve()
-    const d = (duration * 1000)/2
+    
     
     let progress = 0
-    let summ = target ? 0: d
+    let summ = target ? 0: duration
     
     let animationArray:CSSTransition[] = []
-    
+    let start = false
     elArray.forEach((el)=>{
         el?.getAnimations().forEach((obj)=>{
             if(obj instanceof CSSTransition && 
@@ -44,12 +44,30 @@ export function updatePlaybackRate({rafId, rejectFn, elArray, transitionProperty
             const dt = Math.min(now - before, 30)
             before = now
 
-            summ = target? Math.min(summ + dt, d):Math.max(summ - dt, 0)
+            summ = target? Math.min(summ + dt, duration):Math.max(summ - dt, 0)
         
-            progress = summ / d
+            progress = summ / duration
 
+            
             animationArray.forEach((obj:CSSTransition)=>{
+                const currentTime = obj.currentTime;
+                if(target && typeof currentTime === 'number' && currentTime>0) start = true
+                
+                
+                if (
+                    obj.playState !== "running" ||
+                    typeof currentTime !== "number" ||
+                    currentTime <= 0 && start
+                ) return
+
                 obj.updatePlaybackRate(progress)
+                console.log("AFTER", {
+                    meinProg: progress,
+                    rate: obj.playbackRate,
+                    currentTime: obj.currentTime,
+                    playState: obj.playState,
+                    startTime: obj.startTime,
+                });
             })
             
             if(target && progress >= 1 || !target && progress <=0 ){

@@ -182,6 +182,7 @@ export function CssTransitionProvider({
         }
         if(duration.current === null){
             duration.current = parseDuration(transitionEndData.current.elArray[0])
+            duration.current = (duration.current??0)*1000/2
         }
     },[pathname])
       

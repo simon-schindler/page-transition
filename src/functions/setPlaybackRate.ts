@@ -9,7 +9,7 @@ export function setPlaybackRate({elArray, transitionProperty, value}:Props){
             if(obj instanceof CSSTransition && 
                 obj.transitionProperty === transitionProperty
             ){
-                obj.updatePlaybackRate(value)
+                obj.playbackRate=value
             }
         })
     })
