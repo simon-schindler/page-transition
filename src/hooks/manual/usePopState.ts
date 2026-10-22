@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 
-import type { Ref, RefObject } from "react";
+import type { RefObject } from "react";
 
 interface Props{
     resolveFn: RefObject<(()=>void)|null>

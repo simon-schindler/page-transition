@@ -32,6 +32,7 @@ export function useHandleLinkClick({
         }).then(()=>{
             if(useUse.current)resolveUseFn.current?.()
             router.push(url)
+            resolveFn.current = null
         })
     },[])
 }

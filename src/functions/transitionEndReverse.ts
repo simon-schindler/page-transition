@@ -3,18 +3,7 @@ import type { RefObject } from "react"
 import { setDelayReverse } from "./setDelayReverse"
 import { resetDelay } from "./resetDelay"
 
-interface TransitionEndObj{
-    elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity' | 'clip-path'
-    mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[]
-    fn: (()=>void)|null 
-}
-
-interface TransitionEndHandler {
-    handler: ((e: TransitionEvent) => void) | null
-    handlerEl: HTMLDivElement | null
-}
+import type { TransitionEndObj, TransitionEndHandler } from "../types/transitionEnd.types"
 
 interface Props{
     transitionEndObj:RefObject<TransitionEndObj>

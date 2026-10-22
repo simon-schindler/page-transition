@@ -1,10 +1,7 @@
 import { parseFirstOpacity } from "./parseFirstOpacity";
 import { parseFirstClipPath } from "./parseFirstClipPath";
 
-interface TransitionEndData{
-    elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
-}
+import type { TransitionEndData } from "../types/transitionEnd.types";
 
 export function checkTransitionStart(transitionEndData: TransitionEndData, fn:(()=>void)|null){
     

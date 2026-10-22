@@ -1,10 +1,7 @@
 import { checkTransitionStart } from "./checkTransitionStart";
 import type { RefObject } from "react";
 
-interface TransitionEndData{
-    elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
-}
+import type { TransitionEndData } from "../types/transitionEnd.types";
 
 interface Props{
     id: RefObject<number|null>

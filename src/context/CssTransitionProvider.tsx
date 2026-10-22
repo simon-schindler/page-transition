@@ -81,6 +81,7 @@ export function CssTransitionProvider({
             this._lock = value
         }
     })
+
     const delayStep = useRef<number|null>(null)
     const duration = useRef<number|null>(null)
 
@@ -151,14 +152,7 @@ export function CssTransitionProvider({
             return
         }
         mount.current.mounted = true
-
-        if(delayStep.current === null && defaultOptions.overlayCount > 1){
-            delayStep.current = parseDelay(transitionEndData.current.elArray)
-        }
-        if(duration.current === null){
-            duration.current = parseDuration(transitionEndData.current.elArray[0])
-        }
-
+        
         if(!container.current)return
         
         transitionEnd({
@@ -182,7 +176,13 @@ export function CssTransitionProvider({
         currentPathname.current = window.location.pathname
         
         reverse.current.lock = false
-        
+
+        if(delayStep.current === null && defaultOptions.overlayCount > 1){
+            delayStep.current = parseDelay(transitionEndData.current.elArray)
+        }
+        if(duration.current === null){
+            duration.current = parseDuration(transitionEndData.current.elArray[0])
+        }
     },[pathname])
       
     const value=useMemo(()=>({handleLinkClick, overlayWrapper, overlayItems}),[])

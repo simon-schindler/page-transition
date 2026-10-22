@@ -2,23 +2,12 @@ import { useRef, useEffect } from "react";
 
 import type { RefObject } from "react";
 
-interface TransitionEndData{
-    elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
-    mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[],
-}
+import type { TransitionEndData, TransitionEndObj } from "../types/transitionEnd.types"
+
 interface Props{
     transitionEndData: RefObject<TransitionEndData>,
     fn: ()=>void
 }  
-interface TransitionEndObj{
-    elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
-    mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[]
-    fn: (()=>void)|null
-}
 
 export function useTransitionEndObj({transitionEndData, fn}:Props){
     

@@ -4,10 +4,7 @@ import { useRef } from "react"
 
 import type { RefObject } from "react"
 
-interface TransitionEndHandler {
-    handler: ((e: TransitionEvent) => void) | null
-    handlerEl: HTMLDivElement | null
-}
+import type { TransitionEndHandler } from "../types/transitionEnd.types"
 
 export function useTransitionEndHandler():RefObject<TransitionEndHandler>{
     

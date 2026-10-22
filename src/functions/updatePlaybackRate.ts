@@ -41,7 +41,7 @@ export function updatePlaybackRate({rafId, rejectFn, elArray, transitionProperty
             if(before === null){
                 before = now
             }
-            const dt = now - before
+            const dt = Math.min(now - before, 30)
             before = now
 
             summ = target? Math.min(summ + dt, d):Math.max(summ - dt, 0)

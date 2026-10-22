@@ -12,16 +12,8 @@ import { pollTransitionStart } from "../functions/pollTransitionStart"
 import { updatePlaybackRate } from "../functions/updatePlaybackRate"
 import { setPlaybackRate } from "../functions/setPlaybackRate"
 
-interface TransitionEndData{
-    elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
-    mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[],
-}
-interface TransitionEndHandler {
-    handler: ((e: TransitionEvent) => void) | null
-    handlerEl: HTMLDivElement | null
-}
+import type { TransitionEndData, TransitionEndHandler } from "../types/transitionEnd.types"
+
 interface Props{
     container: RefObject<HTMLDivElement|null>
     currentPathname: RefObject<string>

@@ -4,12 +4,8 @@ import { useEffect, useRef } from "react"
 
 import type { RefObject } from "react"
 
-interface TransitionEndData{
-    elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
-    mirror: boolean
-    mirrorElArray: (HTMLDivElement|null)[]
-}
+import type { TransitionEndData } from "../types/transitionEnd.types"
+
 interface Props{
     elArray: RefObject<HTMLDivElement|null|(HTMLDivElement|null)[]>
     transitionProperty: 'opacity'|'clip-path'
