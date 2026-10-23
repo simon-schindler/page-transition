@@ -157,6 +157,9 @@ export function useHandleLinkClick({
         }).then(()=>{
 
             if(wait){
+                if(state.current === 'idle' && 
+                    currentPathname.current === basePathUrl)return
+                        
                 if(currentPathname.current === basePathUrl 
                     && state.current === 'exiting' ){
                     transitionEnd({
@@ -167,6 +170,7 @@ export function useHandleLinkClick({
                     })
                     return
                 }
+
                 if(state.current === 'entering' && 
                     currentPathname.current === basePathUrl
                 ){
@@ -225,8 +229,8 @@ export function useHandleLinkClick({
                 })
                 
                 let elArray = []
-                if(transitionEndData.current.mirror){
-                    elArray = [...transitionEndData.current.mirrorElArray, ...transitionEndData.current.elArray]
+                if(transitionEndData.current.secondElArray.length > 0){
+                    elArray = [...transitionEndData.current.secondElArray, ...transitionEndData.current.elArray]
                 }else{
                     elArray = [...transitionEndData.current.elArray]
                 }
@@ -238,7 +242,7 @@ export function useHandleLinkClick({
                     target: 0,
                     duration: duration.current ?? 0
                 }).then(()=>{
-                    if(basePathUrl === currentPathname.current){
+                    if(nextPage.current === currentPathname.current){
                         transitionEnd({
                             transitionEndObj: afterExit, 
                             transitionEndHandler,

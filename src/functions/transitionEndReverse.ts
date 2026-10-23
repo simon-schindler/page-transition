@@ -30,9 +30,9 @@ export function transtionEndReverse({
         transitionProperty: endObj.transitionProperty,
         delayStep: delayStep.current
     })
-    if(endObj.mirror){
+    if(endObj.secondElArray.length === endObj.elArray.length){
         setDelayReverse({
-            elArray: endObj.mirrorElArray,
+            elArray: endObj.secondElArray,
             transitionProperty: endObj.transitionProperty,
             delayStep: delayStep.current
         })
@@ -41,13 +41,16 @@ export function transtionEndReverse({
     const firstEl = endObj.elArray[0]
 
     const handler=(e: TransitionEvent)=>{
-        console.log('transitionEndReverse handler fired')
+        
         if(e.propertyName !== endObj.transitionProperty ||
             e.target !== e.currentTarget
         )return
         
         resetDelay(endObj.elArray)
-        resetDelay(endObj.mirrorElArray)
+        if(endObj.secondElArray.length === endObj.elArray.length){
+            resetDelay(endObj.secondElArray)
+        }
+        
         reverse.current.lock = true
         firstEl?.removeEventListener('transitionend', handler)
         endObj.fn?.()

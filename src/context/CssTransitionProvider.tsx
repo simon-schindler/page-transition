@@ -23,14 +23,12 @@ import { pollTransitionStart } from "../functions/pollTransitionStart";
 interface TransitionOptions{
     transitionProperty?: 'opacity'|'clip-path'
     wait?: boolean
-    overlayCount?: number
-    mirror?: boolean
+    items?: [number, number]
 }
 interface DefaultOptions{
     transitionProperty: 'opacity'|'clip-path'
     wait: boolean
-    overlayCount: number
-    mirror: boolean
+    items: [number, number]
 }
 interface ProviderProps{
     header?:ReactNode
@@ -47,15 +45,14 @@ export function CssTransitionProvider({
     const defaultOptions:DefaultOptions = {
         transitionProperty: 'opacity',
         wait: false,
-        overlayCount: 0,
-        mirror: false,
+        items: [0, 0],
         ...options
     }
 
     const container = useRef<HTMLDivElement|null>(null)
     const overlayWrapper = useRef<HTMLDivElement|null>(null)
     const overlayItems = useRef<(HTMLDivElement|null)[]>([])
-    const mirrorItems = useRef<(HTMLDivElement|null)[]>([])
+    const secondItems = useRef<(HTMLDivElement|null)[]>([])
     
     const pathname = usePathname()
     const currentPathname = useRef(pathname)
@@ -77,7 +74,9 @@ export function CssTransitionProvider({
             return this._lock
         },
         set lock(value: boolean){
-            if(delayStep.current === 0 || overlayItems.current.length < 2){
+            if(delayStep.current === 0 || 
+                overlayItems.current.length < 2 ||
+            defaultOptions.wait === true){
                 if(this._lock === false)this._lock = true
                 return
             }
@@ -92,10 +91,9 @@ export function CssTransitionProvider({
 
     const transitionEndHandler = useTransitionEndHandler()
     const transitionEndData = useTransitionEndData({
-        elArray: defaultOptions.overlayCount === 0 ? container : overlayItems,
+        elArray: defaultOptions.items[0] === 0 ? container : overlayItems,
         transitionProperty: defaultOptions.transitionProperty,
-        mirror: defaultOptions.mirror,
-        mirrorElArray: mirrorItems
+        secondElArray: secondItems
     })
 
     const pollRafId = useRef<number|null>(null)
@@ -182,13 +180,12 @@ export function CssTransitionProvider({
         
         reverse.current.lock = false
 
-        if(delayStep.current === null && defaultOptions.overlayCount > 1){
+        if(delayStep.current === null && defaultOptions.items[0] > 1){
             delayStep.current = defaultOptions.wait? 0 :
             parseDelay(transitionEndData.current.elArray)
         }
         if(duration.current === null && !defaultOptions.wait){
-            duration.current = parseDuration(transitionEndData.current.elArray[0])
-            duration.current = (duration.current??0)*1000/2
+            duration.current = parseDuration(transitionEndData.current.elArray[0])*1000/3
         }
     },[pathname])
       
@@ -208,7 +205,7 @@ export function CssTransitionProvider({
                 className="overlay-wrapper"
                 >
                     {
-                        defaultOptions.overlayCount > 0 && Array.from({length: defaultOptions.overlayCount}).map((_,i)=>(
+                        defaultOptions.items[0] > 0 && Array.from({length: defaultOptions.items[0]}).map((_,i)=>(
                             <div 
                             key={i}
                             ref={(el)=>{
@@ -218,11 +215,11 @@ export function CssTransitionProvider({
                         ))
                     }
                     {
-                        defaultOptions.mirror && Array.from({length:defaultOptions.overlayCount}).map((_,i)=>(
+                        defaultOptions.items[1] > 0 && Array.from({length:defaultOptions.items[1]}).map((_,i)=>(
                             <div
                             key={`mirror${i}`}
                             ref={(el)=>{
-                                mirrorItems.current[i] = el
+                                secondItems.current[i] = el
                             }}
                             className="mirror-item"
                             />

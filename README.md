@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.43-000000) ![86.9 KB](https://img.shields.io/badge/86.9_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.44-000000) ![86.9 KB](https://img.shields.io/badge/86.9_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -51,8 +51,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 |---|---|---|
 | transitionProperty | "opacity" \| "clip-path" | "opacity" |
 | wait | boolean | false |
-| overlayCount | number | 0 |
-| mirror | boolean | false |
+| items | [number, number] | [0, 0] |
+
 
 **Prop Descriptions**
 
@@ -66,13 +66,16 @@ The component rendered outside the transition container.
 Defines which property transitionend waits for.  
   
 **options.wait**  
-Starts a new transition after the current transition has finished.
+false: Reverses the current enter transition.  
+true: Waits for the current enter transition to finish before starting the new transition.
   
-**options.overlayCount**  
-Defines how many overlay items should be created.
-
-**options.mirror**
-Creates the same number of items as specified by overlayCount.
+**options.items**
+<br/>
+options.items[0]
+Number of items in the first group. Each item receives the `.overlay-item` class.
+<br/>
+options.items[1]
+Number of items in the second group. Each item receives the `.second-item` class.
 
 
 ```tsx
@@ -80,7 +83,7 @@ Creates the same number of items as specified by overlayCount.
 header={<Header/>}
 options={{
   transitionProperty: "clip-path",
-  overlayCount: 1
+  items: [1, 0]
 }}
 >
   {children}
@@ -119,10 +122,11 @@ Once the transition ends, the scroll position is restored and navigation is perf
 
 After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
 
-For overlay animations, a `.overlay-wrapper` is available. You can add overlay items by setting the `overlayCount` option.
+For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array. The transition waits for the first item group to finish its transition.
+<br/>
+When `wait` is `false`, both item groups must contain the same number of items for reverse delays to work correctly. Both groups will then receive the same delay durations when reversing a staggered enter transition.
 
-If mirror is set to true, the same number of div elements specified by `overlayCount` are added to the `.overlay-wrapper` with the class `mirror-item`. The transitionend dont wait for mirror items.
-  
+
   *At the moment, it only supports duration and delay in seconds.*
 
 To access the overlay wrapper and its items, use `useTransitionContext`.
@@ -130,7 +134,7 @@ To access the overlay wrapper and its items, use `useTransitionContext`.
 ```ts
 import { useTransitionContext } from "page-transition"
 
-const {overlayWrapper, overlayItems} = useTransitionContext()
+const { overlayWrapper, overlayItems } = useTransitionContext()
 
 ```
 
@@ -142,7 +146,7 @@ options
 
 ```ts
 transitionProperty: "opacity"
-overlayCount: 0
+
 ```
 
 ```css
@@ -169,7 +173,7 @@ options
 
 ```ts
 transitionProperty: "clip-path"  
-overlayCount: 1
+items: [1, 0]
 ```
   
 ```css
@@ -204,7 +208,7 @@ options
   
 ```ts
 transitionProperty: "clip-path"  
-overlayCount: 10
+items: [10, 0]
 ```
 
 ```scss
@@ -249,8 +253,7 @@ options
 
 ```ts
 transitionProperty: "clip-path"  
-overlayCount: 10
-mirror: true
+items: [10, 10]
 ```
 
 ```scss
@@ -290,8 +293,8 @@ mirror: true
         }
     }
 }
-// .mirror-item
-[data-transition] .mirror-item{
+// .second-item
+[data-transition] .second-item{
     grid-row: 2;
     background: black;
     
@@ -299,7 +302,7 @@ mirror: true
     will-change: clip-path;
     clip-path: inset(100% 0 0 0);
 }
-[data-transition].exit .mirror-item{
+[data-transition].exit .second-item{
     grid-row: 2;
     clip-path: inset(0 -1px 0 -1px);
     transition: clip-path 1.2s ease;
@@ -309,7 +312,7 @@ mirror: true
         }
     }
 }
-[data-transition].enter .mirror-item{
+[data-transition].enter .second-item{
     grid-row: 2;
     clip-path: inset(100% -1px 0 -1px);
     transition: clip-path 1.2s ease;

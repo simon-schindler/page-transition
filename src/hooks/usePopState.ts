@@ -226,8 +226,8 @@ export function usePopState({
                             })
                             
                             let elArray = []
-                            if(transitionEndData.current.mirror){
-                                elArray = [...transitionEndData.current.mirrorElArray, ...transitionEndData.current.elArray]
+                            if(transitionEndData.current.secondElArray.length > 0){
+                                elArray = [...transitionEndData.current.secondElArray, ...transitionEndData.current.elArray]
                             }else{
                                 elArray = [...transitionEndData.current.elArray]
                             }

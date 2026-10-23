@@ -9,22 +9,19 @@ import type { TransitionEndData } from "../types/transitionEnd.types"
 interface Props{
     elArray: RefObject<HTMLDivElement|null|(HTMLDivElement|null)[]>
     transitionProperty: 'opacity'|'clip-path'
-    mirror: boolean
-    mirrorElArray: RefObject<(HTMLDivElement|null)[]>
+    secondElArray: RefObject<(HTMLDivElement|null)[]>
 }
 
 export function useTransitionEndData({
     elArray,
     transitionProperty,
-    mirror,
-    mirrorElArray
+    secondElArray
 }:Props): RefObject<TransitionEndData>{
     
     const transitionEndData = useRef<TransitionEndData>({
         elArray: [],
         transitionProperty,
-        mirror,
-        mirrorElArray: [],
+        secondElArray: [],
     })
 
     useEffect(()=>{
@@ -32,7 +29,7 @@ export function useTransitionEndData({
             ...transitionEndData.current,
             elArray: Array.isArray(elArray.current) ? 
             elArray.current:[elArray.current],
-            mirrorElArray: mirrorElArray.current
+            secondElArray: secondElArray.current
         }
     },[])
     

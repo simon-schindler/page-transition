@@ -14,8 +14,7 @@ export function useTransitionEndObj({transitionEndData, fn}:Props){
     const transitionEndObj=useRef<TransitionEndObj>({
         elArray: [],
         transitionProperty: transitionEndData.current.transitionProperty,
-        mirror:transitionEndData.current.mirror,
-        mirrorElArray:[],
+        secondElArray:[],
         fn: null
     })
 
