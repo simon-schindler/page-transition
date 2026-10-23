@@ -221,7 +221,7 @@ export function CssTransitionProvider({
                             ref={(el)=>{
                                 secondItems.current[i] = el
                             }}
-                            className="mirror-item"
+                            className="second-item"
                             />
                         ))
                     }
