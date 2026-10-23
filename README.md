@@ -111,13 +111,13 @@ Triggers the transition.
 
 The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the `exit` class and waits for the transitionend event of the configured transition property.
 
-Once the transition ends, navigation is performed and the scroll position is restored using window.history.state.scrollY.
+Once the transition ends, the scroll position is restored and navigation is performed.  
 
 After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
 
 For overlay animations, a `.overlay-wrapper` is available. You can add overlay items by setting the `overlayCount` option.
 
-If mirror is set to true, the same number of div elements specified by `overlayCount` are added to the `.overlay-wrapper` with the class `mirror-item`. The transitionend dont wait for mirror items. This ideal for mirror effects.  
+If mirror is set to true, the same number of div elements specified by `overlayCount` are added to the `.overlay-wrapper` with the class `mirror-item`. The transitionend dont wait for mirror items.
   
   *At the moment, it only supports duration and delay in seconds.*
 
