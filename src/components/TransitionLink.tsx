@@ -26,8 +26,8 @@ export function TransitionLink({
         <Link 
         href={href} 
         onClick={(e)=>{
-            handleLinkClick.current(e, href)
             onClick?.(e)
+            handleLinkClick.current(e, href)
         }}
         className={className}
         prefetch={prefetch}

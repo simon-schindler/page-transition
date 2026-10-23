@@ -48,26 +48,17 @@ export function updatePlaybackRate({rafId, rejectFn, elArray, transitionProperty
         
             progress = summ / duration
 
-            
             animationArray.forEach((obj:CSSTransition)=>{
                 const currentTime = obj.currentTime;
                 if(target && typeof currentTime === 'number' && currentTime>0) start = true
                 
-                
-                if (
-                    obj.playState !== "running" ||
+                if(obj.playState !== "running" ||
                     typeof currentTime !== "number" ||
                     currentTime <= 0 && start
                 ) return
 
                 obj.updatePlaybackRate(progress)
-                console.log("AFTER", {
-                    meinProg: progress,
-                    rate: obj.playbackRate,
-                    currentTime: obj.currentTime,
-                    playState: obj.playState,
-                    startTime: obj.startTime,
-                });
+                
             })
             
             if(target && progress >= 1 || !target && progress <=0 ){

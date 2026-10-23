@@ -50,6 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 | Option | Type | Default |
 |---|---|---|
 | transitionProperty | "opacity" \| "clip-path" | "opacity" |
+| wait | boolean | false |
 | overlayCount | number | 0 |
 | mirror | boolean | false |
 
@@ -63,6 +64,9 @@ The component rendered outside the transition container.
 
 **options.transitionProperty**  
 Defines which property transitionend waits for.  
+  
+**options.wait**
+Starts a new transition after the current transition has finished.
   
 **options.overlayCount**  
 Defines how many overlay items should be created.

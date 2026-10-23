@@ -22,11 +22,13 @@ import { pollTransitionStart } from "../functions/pollTransitionStart";
 
 interface TransitionOptions{
     transitionProperty?: 'opacity'|'clip-path'
+    wait?: boolean
     overlayCount?: number
     mirror?: boolean
 }
 interface DefaultOptions{
     transitionProperty: 'opacity'|'clip-path'
+    wait: boolean
     overlayCount: number
     mirror: boolean
 }
@@ -44,6 +46,7 @@ export function CssTransitionProvider({
 
     const defaultOptions:DefaultOptions = {
         transitionProperty: 'opacity',
+        wait: false,
         overlayCount: 0,
         mirror: false,
         ...options
@@ -113,7 +116,8 @@ export function CssTransitionProvider({
         rafId,
         rejectFn,
         delayStep,
-        duration
+        duration,
+        wait: defaultOptions.wait
     })
     useHandleLinkClick({
         container,
@@ -130,7 +134,8 @@ export function CssTransitionProvider({
         rafId,
         rejectFn,
         delayStep,
-        duration
+        duration,
+        wait: defaultOptions.wait
     })
     useScrollRestoration()
 
@@ -178,9 +183,10 @@ export function CssTransitionProvider({
         reverse.current.lock = false
 
         if(delayStep.current === null && defaultOptions.overlayCount > 1){
-            delayStep.current = parseDelay(transitionEndData.current.elArray)
+            delayStep.current = defaultOptions.wait? 0 :
+            parseDelay(transitionEndData.current.elArray)
         }
-        if(duration.current === null){
+        if(duration.current === null && !defaultOptions.wait){
             duration.current = parseDuration(transitionEndData.current.elArray[0])
             duration.current = (duration.current??0)*1000/2
         }

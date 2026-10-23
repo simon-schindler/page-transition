@@ -28,6 +28,7 @@ interface Props{
     rejectFn: RefObject<(()=>void)|null>
     delayStep: RefObject<number|null>
     duration: RefObject<number|null>
+    wait: boolean
 }
 export function usePopState({
     container,
@@ -42,7 +43,8 @@ export function usePopState({
     rafId,
     rejectFn,
     delayStep,
-    duration
+    duration,
+    wait
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
@@ -116,6 +118,7 @@ export function usePopState({
             rejectFn.current?.()
             
             container.current?.classList.remove('enter')
+            void container.current?.offsetWidth
             container.current?.classList.add('exit')
              
             state.current='exiting'
@@ -128,7 +131,7 @@ export function usePopState({
             })  
         }
     })
-    
+   
     useEffect(()=>{
         
         const handlePopstate=()=>{
@@ -153,7 +156,55 @@ export function usePopState({
                         }else{
                             resolveNavigating()
                         }
-                    }).then(()=>{ 
+                    }).then(()=>{
+
+                        if(wait){
+                            if(currentPathname.current === window.location.pathname 
+                                && state.current === 'exiting' ){
+                                transitionEnd({
+                                    transitionEndObj:afterExit,
+                                    transitionEndHandler,
+                                    reverse,
+                                    delayStep
+                                })
+                                return
+                            }
+                            if(state.current === 'entering' && 
+                                currentPathname.current === window.location.pathname
+                            ){
+                                transitionEnd({
+                                    transitionEndObj: removeEnter, 
+                                    transitionEndHandler,
+                                    reverse,
+                                    delayStep
+                                })
+                                return
+                            }
+                            
+                            if(state.current === 'idle'|| state.current === 'exiting'){
+                                
+                                transitionEnd({
+                                    transitionEndObj: pop, 
+                                    transitionEndHandler,
+                                    reverse,
+                                    delayStep
+                                })
+                                container.current?.classList.remove('enter')
+                                container.current?.classList.add('exit')
+                                
+                                state.current='exiting'
+                            }
+                            else{
+                                transitionEnd({
+                                    transitionEndObj: afterEntering,
+                                    transitionEndHandler,
+                                    reverse,
+                                    delayStep
+                                })
+                            }
+                            
+                            return
+                        }
                         
                         if(currentPathname.current === window.location.pathname){
                             
