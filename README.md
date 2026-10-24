@@ -47,11 +47,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
 *Options*
 
-| Option | Type | Default |
-|---|---|---|
-| transitionProperty | "opacity" \| "clip-path" | "opacity" |
-| wait | boolean | false |
-| items | [number, number] | [0, 0] |
+| Option | Type | Default | Required |
+|---|---|---|---|
+| transitionProperty | "opacity" \| "clip-path" \| "transform" | - | Yes |
+| items | [number, number] | [0, 0] | - |
 
 
 **Prop Descriptions**
@@ -65,16 +64,12 @@ The component rendered outside the transition container.
 **options.transitionProperty**  
 Defines which property transitionend waits for.  
   
-**options.wait**  
-false: Reverses the current enter transition.  
-true: Waits for the current enter transition to finish before starting the new transition.
-  
 **options.items**
 <br/>
-options.items[0]
+`options.items[0]`
 Number of items in the first group. Each item receives the `.overlay-item` class.
 <br/>
-options.items[1]
+`options.items[1]`
 Number of items in the second group. Each item receives the `.second-item` class.
 
 
@@ -124,11 +119,6 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
 
 For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array. The transition waits for the first item group to finish its transition.
 <br/>
-When `wait` is `false`, both item groups must contain the same number of items for reverse delays to work correctly. Both groups will then receive the same delay durations when reversing a staggered enter transition.
-
-
-  *At the moment, it only supports duration and delay in seconds.*
-
 To access the overlay wrapper and its items, use `useTransitionContext`.
 
 ```ts

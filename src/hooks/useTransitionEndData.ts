@@ -5,10 +5,11 @@ import { useEffect, useRef } from "react"
 import type { RefObject } from "react"
 
 import type { TransitionEndData } from "../types/transitionEnd.types"
+import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 interface Props{
     elArray: RefObject<HTMLDivElement|null|(HTMLDivElement|null)[]>
-    transitionProperty: 'opacity'|'clip-path'
+    transitionProperty: TransitionProperty
     secondElArray: RefObject<(HTMLDivElement|null)[]>
 }
 

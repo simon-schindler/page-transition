@@ -1,21 +1,15 @@
 import type { RefObject } from "react"
 
-import { transtionEndReverse } from "./transitionEndReverse"
-
 import type { TransitionEndObj, TransitionEndHandler } from "../types/transitionEnd.types"
 
 interface Props{
     transitionEndObj:RefObject<TransitionEndObj>
     transitionEndHandler: RefObject<TransitionEndHandler>
-    reverse: RefObject<{_lock: boolean,lock: boolean}>
-    delayStep: RefObject<number|null>
 }
 
 export function transitionEnd({
     transitionEndObj,
-    transitionEndHandler,
-    reverse,
-    delayStep
+    transitionEndHandler
 }: Props){
     
     const lastIndex = transitionEndObj.current.elArray.length - 1
@@ -26,17 +20,6 @@ export function transitionEnd({
     }
 
     const endObj = transitionEndObj.current
-    
-    if(!reverse.current.lock){
-        transtionEndReverse({
-            transitionEndObj,
-            transitionEndHandler,
-            reverse,
-            delayStep
-        })
-        
-        return
-    }
     
     const handler = (e:TransitionEvent)=>{
         

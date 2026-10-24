@@ -7,6 +7,8 @@ import type { ReactNode, RefObject} from "react";
 import { CssTransitionProvider } from "./CssTransitionProvider";
 import { ManualTransitionProvider } from "./ManualTransitionProvider";
 
+import type { TransitionProperty } from "../types/transitionPropertys.types";
+
 interface ContextProps{
     handleLinkClick: RefObject<((e: React.MouseEvent, url:string)=>void)>
     overlayWrapper?: RefObject<HTMLDivElement|null>
@@ -24,17 +26,15 @@ export function useTransitionContext(){
 }
 
 type Mode = 'css'|'manual'
-type TransitionProperty = 'opacity'|'clip-path'
 
 interface TransitionOptions{
-    transitionProperty?: TransitionProperty
-    wait?: boolean
+    transitionProperty: TransitionProperty
     items?: [number, number]
 }
 interface ProviderProps{
     header?: ReactNode
     mode?: Mode
-    options?: TransitionOptions
+    options: TransitionOptions
     children: ReactNode
 }
 

@@ -1,12 +1,14 @@
+import type { TransitionProperty } from "./transitionPropertys.types"
+
 export interface TransitionEndData{
     elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
+    transitionProperty: TransitionProperty
     secondElArray: (HTMLDivElement|null)[]
 }
 
 export interface TransitionEndObj{
     elArray: (HTMLDivElement|null)[]
-    transitionProperty: 'opacity'|'clip-path'
+    transitionProperty: TransitionProperty
     secondElArray: (HTMLDivElement|null)[]
     fn: (()=>void)|null
 }

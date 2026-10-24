@@ -9,9 +9,6 @@ import { transitionEnd } from "../functions/transitionEnd"
 
 import { pollTransitionStart } from "../functions/pollTransitionStart"
 
-import { updatePlaybackRate } from "../functions/updatePlaybackRate"
-import { setPlaybackRate } from "../functions/setPlaybackRate"
-
 import type { TransitionEndData, TransitionEndHandler } from "../types/transitionEnd.types"
 
 interface Props{
@@ -19,32 +16,22 @@ interface Props{
     currentPathname: RefObject<string>
     transitionEndData: RefObject<TransitionEndData>
     transitionEndHandler: RefObject<TransitionEndHandler>
-    reverse: RefObject<{_lock: boolean, lock: boolean}>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
     pollRafId: RefObject<number|null>
-    rafId: RefObject<number|null>
-    rejectFn: RefObject<(()=>void)|null>
-    delayStep: RefObject<number|null>
-    duration: RefObject<number|null>
-    wait: boolean
+    
+    
 }
 export function usePopState({
     container,
     currentPathname,
     transitionEndData,
     transitionEndHandler,
-    reverse,
     state,
     useUse,
     resolveUseFn,
-    pollRafId,
-    rafId,
-    rejectFn,
-    delayStep,
-    duration,
-    wait
+    pollRafId
 }:Props){
 
     const [promise, setPromise]=useState<null| Promise<void>>(null)
@@ -57,14 +44,13 @@ export function usePopState({
     }
 
     const resolveFn = useRef<(()=>void)|null>(null)
-    const afterExitFn=useRef<(()=>void)|null>(null)
+    const afterExitFn = useRef<(()=>void)|null>(null)
     
     const removeEnter=useTransitionEndObj({
         transitionEndData,
         fn: ()=>{
             container.current?.classList.remove('enter')
             state.current='idle'
-            reverse.current.lock = true
         }
     })
     const afterExit = useTransitionEndObj({
@@ -72,9 +58,7 @@ export function usePopState({
         fn: afterExitFn.current = ()=>{
             transitionEnd({
                 transitionEndObj: removeEnter,
-                transitionEndHandler,
-                reverse,
-                delayStep
+                transitionEndHandler 
             })
             
             state.current = 'navigating'
@@ -90,7 +74,6 @@ export function usePopState({
                 transitionEndData,
                 fn:()=>{
                     state.current='entering'
-                    reverse.current.lock = false
                 }
             })
         }
@@ -111,23 +94,14 @@ export function usePopState({
         transitionEndData,
         fn: ()=>{
 
-            if(rafId.current){
-                cancelAnimationFrame(rafId.current)
-                rafId.current = null
-            }
-            rejectFn.current?.()
-            
             container.current?.classList.remove('enter')
             void container.current?.offsetWidth
             container.current?.classList.add('exit')
-             
             state.current='exiting'
 
             transitionEnd({
                 transitionEndObj: pop,
-                transitionEndHandler,
-                reverse,
-                delayStep
+                transitionEndHandler
             })  
         }
     })
@@ -138,6 +112,7 @@ export function usePopState({
             
             setPromise(
                 new Promise<void>((resolve, reject)=>{
+
                     resolveFn.current = resolve
                     resolveUseFn.current = reject
                     
@@ -146,6 +121,7 @@ export function usePopState({
                         if(state.current === "navigating"){
                             
                             if(currentPathname.current !== window.location.pathname){
+                                state.current = 'navigating'
                                 resolveFn.current?.()
                                 setPromise(null)
                                 return
@@ -158,139 +134,44 @@ export function usePopState({
                         }
                     }).then(()=>{
 
-                        if(wait){
-                            if(currentPathname.current === window.location.pathname 
-                                && state.current === 'exiting' ){
-                                transitionEnd({
-                                    transitionEndObj:afterExit,
-                                    transitionEndHandler,
-                                    reverse,
-                                    delayStep
-                                })
-                                return
+                        if(currentPathname.current === window.location.pathname 
+                            && state.current === 'exiting' ){
+                            transitionEnd({
+                                transitionEndObj:afterExit,
+                                transitionEndHandler
+                            })
+                            return
                             }
-                            if(state.current === 'entering' && 
-                                currentPathname.current === window.location.pathname
-                            ){
-                                transitionEnd({
-                                    transitionEndObj: removeEnter, 
-                                    transitionEndHandler,
-                                    reverse,
-                                    delayStep
-                                })
-                                return
-                            }
-                            
-                            if(state.current === 'idle'|| state.current === 'exiting'){
-                                
-                                transitionEnd({
-                                    transitionEndObj: pop, 
-                                    transitionEndHandler,
-                                    reverse,
-                                    delayStep
-                                })
-                                container.current?.classList.remove('enter')
-                                container.current?.classList.add('exit')
-                                
-                                state.current='exiting'
-                            }
-                            else{
-                                transitionEnd({
-                                    transitionEndObj: afterEntering,
-                                    transitionEndHandler,
-                                    reverse,
-                                    delayStep
-                                })
-                            }
-                            
+
+                        if(state.current === 'entering' && 
+                            currentPathname.current === window.location.pathname
+                        ){
+                            transitionEnd({
+                                transitionEndObj: removeEnter, 
+                                transitionEndHandler
+                            })
                             return
                         }
-                        
-                        if(currentPathname.current === window.location.pathname){
                             
+                        if(state.current === 'idle'|| state.current === 'exiting'){
+                                
                             transitionEnd({
-                                transitionEndObj: afterExit,
-                                transitionEndHandler,
-                                reverse,
-                                delayStep
+                                transitionEndObj: pop, 
+                                transitionEndHandler     
                             })
 
-                            return
-                        }
-                        if(state.current === 'entering'){
+                            container.current?.classList.remove('enter')
+                            container.current?.classList.add('exit')
+                                
+                            state.current='exiting'
+
+                        }else{
                             transitionEnd({
                                 transitionEndObj: afterEntering,
-                                transitionEndHandler,
-                                reverse,
-                                delayStep
+                                transitionEndHandler
                             })
-                            
-                            let elArray = []
-                            if(transitionEndData.current.secondElArray.length > 0){
-                                elArray = [...transitionEndData.current.secondElArray, ...transitionEndData.current.elArray]
-                            }else{
-                                elArray = [...transitionEndData.current.elArray]
-                            }
-                            updatePlaybackRate({
-                                rafId,
-                                rejectFn,
-                                elArray,
-                                transitionProperty: transitionEndData.current.transitionProperty,
-                                target: 0,
-                                duration: duration.current ?? 0
-                            }).then(()=>{
-                                if(currentPathname.current === window.location.pathname){
-                                    transitionEnd({
-                                        transitionEndObj: afterExit, 
-                                        transitionEndHandler,
-                                        reverse,
-                                        delayStep
-                                    })  
-                                }else{
-                                    transitionEnd({
-                                        transitionEndObj: pop, 
-                                        transitionEndHandler,
-                                        reverse,
-                                        delayStep
-                                    })
-                                }
-                                
-                                container.current?.classList.remove('enter')
-                                container.current?.classList.add('exit')
-                                
-                                state.current='exiting'
-
-                                setPlaybackRate({
-                                    elArray,
-                                    transitionProperty: transitionEndData.current.transitionProperty,
-                                    value: 0
-                                })
-                                updatePlaybackRate({
-                                    rafId,
-                                    rejectFn,
-                                    elArray,
-                                    transitionProperty: transitionEndData.current.transitionProperty,
-                                    target: 1,
-                                    duration: duration.current ?? 0
-                                }).catch(()=>{})
-                                
-                            }).catch(()=>{})
-                            
-                            return
                         }
-                       
-                        transitionEnd({
-                            transitionEndObj: pop, 
-                            transitionEndHandler,
-                            reverse,
-                            delayStep
-                        })
-                        
-                        container.current?.classList.remove('enter')
-                        container.current?.classList.add('exit')
-                        
-                        state.current='exiting'
-                    }) 
+                    })             
                 }).catch(()=>setPromise(null))
             )
         }

@@ -16,23 +16,21 @@ import { useHandleLinkClick } from "../hooks/useHandleLinkClick";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
 import { usePopState } from "../hooks/usePopState";
 
-import { parseDelay } from "../functions/parseDelay";
-import { parseDuration } from "../functions/parseDuration";
 import { pollTransitionStart } from "../functions/pollTransitionStart"; 
 
+import type { TransitionProperty } from "../types/transitionPropertys.types";
+
 interface TransitionOptions{
-    transitionProperty?: 'opacity'|'clip-path'
-    wait?: boolean
+    transitionProperty: TransitionProperty
     items?: [number, number]
 }
 interface DefaultOptions{
-    transitionProperty: 'opacity'|'clip-path'
-    wait: boolean
+    transitionProperty: TransitionProperty
     items: [number, number]
 }
 interface ProviderProps{
     header?:ReactNode
-    options?:TransitionOptions
+    options:TransitionOptions
     children:ReactNode,
 }
 
@@ -43,8 +41,6 @@ export function CssTransitionProvider({
 }:ProviderProps){
 
     const defaultOptions:DefaultOptions = {
-        transitionProperty: 'opacity',
-        wait: false,
         items: [0, 0],
         ...options
     }
@@ -68,25 +64,6 @@ export function CssTransitionProvider({
     const useUse = useRef(false)
     const resolveUseFn = useRef<(()=>void)|null>(null)
     
-    const reverse = useRef({
-        _lock: true,
-        get lock(){
-            return this._lock
-        },
-        set lock(value: boolean){
-            if(delayStep.current === 0 || 
-                overlayItems.current.length < 2 ||
-            defaultOptions.wait === true){
-                if(this._lock === false)this._lock = true
-                return
-            }
-            this._lock = value
-        }
-    })
-
-    const delayStep = useRef<number|null>(null)
-    const duration = useRef<number|null>(null)
-
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
     const transitionEndHandler = useTransitionEndHandler()
@@ -98,24 +75,15 @@ export function CssTransitionProvider({
 
     const pollRafId = useRef<number|null>(null)
 
-    const rafId = useRef<number|null>(null)
-    const rejectFn = useRef<(()=>void)|null>(null)
-    
     usePopState({
         container,
         currentPathname,
         transitionEndData,
         transitionEndHandler,
         state,
-        reverse,
         useUse,
         resolveUseFn,
-        pollRafId,
-        rafId,
-        rejectFn,
-        delayStep,
-        duration,
-        wait: defaultOptions.wait
+        pollRafId
     })
     useHandleLinkClick({
         container,
@@ -124,16 +92,10 @@ export function CssTransitionProvider({
         transitionEndData,
         transitionEndHandler,
         state,
-        reverse,
         useUse,
         resolveUseFn,
         basePath,
-        pollRafId,
-        rafId,
-        rejectFn,
-        delayStep,
-        duration,
-        wait: defaultOptions.wait
+        pollRafId
     })
     useScrollRestoration()
 
@@ -142,7 +104,6 @@ export function CssTransitionProvider({
         fn:()=>{
             container.current?.classList.remove('enter')
             state.current = 'idle'
-            reverse.current.lock = true
         }
     })
     
@@ -160,9 +121,7 @@ export function CssTransitionProvider({
         
         transitionEnd({
             transitionEndObj: removeEnter,
-            transitionEndHandler,
-            reverse,
-            delayStep
+            transitionEndHandler
         })
             
         container.current.classList.remove('exit')
@@ -178,15 +137,6 @@ export function CssTransitionProvider({
         
         currentPathname.current = window.location.pathname
         
-        reverse.current.lock = false
-
-        if(delayStep.current === null && defaultOptions.items[0] > 1){
-            delayStep.current = defaultOptions.wait? 0 :
-            parseDelay(transitionEndData.current.elArray)
-        }
-        if(duration.current === null && !defaultOptions.wait){
-            duration.current = parseDuration(transitionEndData.current.elArray[0])*1000/3
-        }
     },[pathname])
       
     const value=useMemo(()=>({handleLinkClick, overlayWrapper, overlayItems}),[])
