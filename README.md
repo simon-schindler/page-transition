@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.44-000000) ![86.9 KB](https://img.shields.io/badge/86.9_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.46-000000) ![67.7 KB](https://img.shields.io/badge/67.7_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
