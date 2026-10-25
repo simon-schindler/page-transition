@@ -117,7 +117,7 @@ Once the transition ends, the scroll position is restored and navigation is perf
 
 After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
 
-For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array. The transition waits for the first item group to finish its transition.
+For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array. The transition waits until the last element in the first group has finished its transition.
 <br/>
 To access the overlay wrapper and its items, use `useTransitionContext`.
 
@@ -315,6 +315,7 @@ items: [10, 10]
 
 ```
 </details>
+
 
 ### Manual Mode
 
