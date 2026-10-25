@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.46-000000) ![67.7 KB](https://img.shields.io/badge/67.7_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.47-000000) ![68.0 KB](https://img.shields.io/badge/68.0_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -59,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 Select the transition mode.
 
 **header**  
-The component rendered outside the transition container.
+The component rendered outside the .page-wrapper.
 
 **options.transitionProperty**  
 Defines which property transitionend waits for.  
@@ -100,8 +100,9 @@ options={{
 TransitionLink uses the Next.js Link component internally. For details about navigation behavior and supported props, refer to the official Next.js documentation.
 
 **Description**  
-Triggers the transition.
+Triggers the transition. 
 
+*Must be used within the TransitionProvider*  
 
 ```tsx
 <TransitionLink href={"/home"}>
@@ -111,13 +112,13 @@ Triggers the transition.
 
 ### CSS Mode
 
-The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the `exit` class and waits for the transitionend event of the configured transition property.
+The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the exit class and waits for the transitionend event of the configured transition property. By default, this is the `.page-wrapper` containing the page's children. If options.items is configured, the event is instead tracked on the last item of the first group.
 
 Once the transition ends, the scroll position is restored and navigation is performed.  
 
 After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
 
-For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array. The transition waits until the last element in the first group has finished its transition.
+For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array.
 <br/>
 <br/>
 To access the overlay wrapper and its items, use `useTransitionContext`.
@@ -141,16 +142,16 @@ transitionProperty: "opacity"
 ```
 
 ```css
-[data-transition]{
+[data-transition] .page-wrapper{
     will-change: opacity;
     opacity: 1;
 }
-[data-transition].exit{
+[data-transition].exit .page-wrapper{
    opacity: 0;  
    transition: opacity 0.4s ease;
    
 }
-[data-transition].enter{
+[data-transition].enter .page-wrapper{
     opacity: 1;
     transition: opacity 0.5s ease;
 }

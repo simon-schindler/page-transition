@@ -42,7 +42,7 @@ export function TransitionProvider({
     header,
     mode='css',
     options, 
-    children,
+    children
 }:ProviderProps){
     
     return(

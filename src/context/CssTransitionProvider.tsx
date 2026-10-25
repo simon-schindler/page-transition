@@ -29,13 +29,13 @@ interface DefaultOptions{
     items: [number, number]
 }
 interface ProviderProps{
-    header?:ReactNode
-    options:TransitionOptions
-    children:ReactNode,
+    header?: ReactNode
+    options: TransitionOptions
+    children: ReactNode
 }
 
-export function CssTransitionProvider({
-    header, 
+export function CssTransitionProvider({ 
+    header,
     options, 
     children
 }:ProviderProps){
@@ -46,6 +46,7 @@ export function CssTransitionProvider({
     }
 
     const container = useRef<HTMLDivElement|null>(null)
+    const pageWrapper = useRef<HTMLDivElement|null>(null)
     const overlayWrapper = useRef<HTMLDivElement|null>(null)
     const overlayItems = useRef<(HTMLDivElement|null)[]>([])
     const secondItems = useRef<(HTMLDivElement|null)[]>([])
@@ -68,7 +69,7 @@ export function CssTransitionProvider({
 
     const transitionEndHandler = useTransitionEndHandler()
     const transitionEndData = useTransitionEndData({
-        elArray: defaultOptions.items[0] === 0 ? container : overlayItems,
+        elArray: defaultOptions.items[0] === 0 ? pageWrapper : overlayItems,
         transitionProperty: defaultOptions.transitionProperty,
         secondElArray: secondItems
     })
@@ -143,13 +144,11 @@ export function CssTransitionProvider({
 
     return(
         <TransitionContext.Provider value={value}>
-            {
-                header
-            }
             <div 
             ref={container}
             data-transition
             >
+                {header}
                 <div 
                 ref={overlayWrapper}
                 className="overlay-wrapper"
@@ -176,7 +175,12 @@ export function CssTransitionProvider({
                         ))
                     }
                 </div>
-                {children}
+                <div 
+                ref={pageWrapper}
+                className={"page-wrapper"}
+                >
+                    {children}
+                </div>
             </div>
         </TransitionContext.Provider>
     )
