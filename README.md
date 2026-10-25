@@ -119,6 +119,7 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
 
 For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array. The transition waits until the last element in the first group has finished its transition.
 <br/>
+<br/>
 To access the overlay wrapper and its items, use `useTransitionContext`.
 
 ```ts
