@@ -345,7 +345,7 @@ items: [10, 10]
 ```
 </details>
 
-
+<br/>
 ### Manual Mode
 
 In manual mode, you can control the transition using `useTransitionContext`.
