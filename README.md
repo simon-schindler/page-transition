@@ -344,11 +344,12 @@ items: [10, 10]
 
 ```
 </details>
-<br/>
 
-### Manual Mode
 
-In manual mode, you can control the transition using `useTransitionContext`.
+
+### Manual Mode  
+
+In manual mode, you can control the transition using `useTransitionContext`.  
 
 After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation. Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
 
