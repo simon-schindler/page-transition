@@ -29,13 +29,13 @@ interface DefaultOptions{
     items: [number, number]
 }
 interface ProviderProps{
-    header?: ReactNode
+    outside?: ReactNode
     options: TransitionOptions
     children: ReactNode
 }
 
 export function CssTransitionProvider({ 
-    header,
+    outside,
     options, 
     children
 }:ProviderProps){
@@ -148,33 +148,36 @@ export function CssTransitionProvider({
             ref={container}
             data-transition
             >
-                {header}
-                <div 
-                ref={overlayWrapper}
-                className="overlay-wrapper"
-                >
-                    {
-                        defaultOptions.items[0] > 0 && Array.from({length: defaultOptions.items[0]}).map((_,i)=>(
-                            <div 
-                            key={i}
-                            ref={(el)=>{
-                                overlayItems.current[i]=el
-                            }}
-                            className="overlay-item"/>
-                        ))
-                    }
-                    {
-                        defaultOptions.items[1] > 0 && Array.from({length:defaultOptions.items[1]}).map((_,i)=>(
-                            <div
-                            key={`mirror${i}`}
-                            ref={(el)=>{
-                                secondItems.current[i] = el
-                            }}
-                            className="second-item"
-                            />
-                        ))
-                    }
-                </div>
+                {outside}
+                {
+                    (defaultOptions.items[0] > 0 ||  defaultOptions.items[1] > 0) && 
+                    <div 
+                    ref={overlayWrapper}
+                    className="overlay-wrapper"
+                    >
+                        {
+                            defaultOptions.items[0] > 0 && Array.from({length: defaultOptions.items[0]}).map((_,i)=>(
+                                <div 
+                                key={i}
+                                ref={(el)=>{
+                                    overlayItems.current[i]=el
+                                }}
+                                className="overlay-item"/>
+                            ))
+                        }
+                        {
+                            defaultOptions.items[1] > 0 && Array.from({length:defaultOptions.items[1]}).map((_,i)=>(
+                                <div
+                                key={`mirror${i}`}
+                                ref={(el)=>{
+                                    secondItems.current[i] = el
+                                }}
+                                className="second-item"
+                                />
+                            ))
+                        }
+                    </div>
+                }
                 <div 
                 ref={pageWrapper}
                 className={"page-wrapper"}

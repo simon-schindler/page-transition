@@ -32,14 +32,14 @@ interface TransitionOptions{
     items?: [number, number]
 }
 interface ProviderProps{
-    header?: ReactNode
+    outside?: ReactNode
     mode?: Mode
     options: TransitionOptions
     children: ReactNode
 }
 
 export function TransitionProvider({
-    header,
+    outside,
     mode='css',
     options, 
     children
@@ -48,7 +48,7 @@ export function TransitionProvider({
     return(
         mode === 'css'?
         <CssTransitionProvider
-        header={header}
+        outside={outside}
         options={options}
         children={children}
         />:

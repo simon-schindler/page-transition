@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.51-000000) ![68.3 KB](https://img.shields.io/badge/68.3_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.52-000000) ![68.7 KB](https://img.shields.io/badge/68.7_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 |Prop|Type|Default|Mode|
 |---|---|---|---|
 | mode | "css" \| "manual" | "css" | Both |
-| header | JSX | - | CSS |
+| outside | JSX | - | CSS |
 | options | *Options* | {} | CSS |
 
 *Options*
@@ -58,8 +58,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 **mode**  
 Select the transition mode.
 
-**header**  
-The component rendered outside the .page-wrapper.
+**outside**  
+Components rendered outside .page-wrapper, but still inside the transition container.
 
 **options.transitionProperty**  
 Defines which property transitionend waits for.  
@@ -75,7 +75,7 @@ Number of items in the second group. Each item receives the `.second-item` class
 
 ```tsx
 <TransitionProvider
-header={<Header/>}
+outside={<Header/>}
 options={{
   transitionProperty: "clip-path",
   items: [1, 0]
@@ -113,6 +113,22 @@ Triggers the transition.
 ### CSS Mode
 
 The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the exit class and waits for the transitionend event of the configured transition property. By default, this is the `.page-wrapper` containing the page's children. If options.items is configured, the event is instead tracked on the last item of the first group.
+
+```tsx 
+<div data-transition>
+    {outside}
+    {
+        (options.items[0] > 0 ||  options.items[1] > 0) &&
+        <div className="overlay-wrapper">
+            ...
+        </div>
+    }
+    <div className={"page-wrapper"}>
+        {children}
+    </div>
+</div>
+
+```
 
 Once the transition ends, the scroll position is restored and navigation is performed.  
 

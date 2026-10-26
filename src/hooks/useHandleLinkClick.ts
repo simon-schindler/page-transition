@@ -117,7 +117,6 @@ export function useHandleLinkClick({
 
             if(state.current === 'navigating'){
                 if(basePathUrl === currentPathname.current){ 
-                    afterExitFn.current?.()
                     return 
                 }else if(basePathUrl !== currentPathname.current){
                     
