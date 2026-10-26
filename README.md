@@ -136,10 +136,9 @@ For overlay animations, an `.overlay-wrapper` is available. You can configure th
 </div>
 ```
 <br/>
-To access the overlay wrapper and its items, use `useTransitionContext`.
-<br/>
-<br/>
-```ts
+To access the overlay wrapper and its items, use `useTransitionContext`.   
+   
+   ```ts
 import { useTransitionContext } from "page-transition"
 
 const { overlayWrapper, overlayItems } = useTransitionContext()
