@@ -134,7 +134,6 @@ For overlay animations, an `.overlay-wrapper` is available. You can configure th
         {children}
     </div>
 </div>
-
 ```
 <br/>
 To access the overlay wrapper and its items, use `useTransitionContext`.
