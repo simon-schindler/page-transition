@@ -113,6 +113,13 @@ Triggers the transition.
 ### CSS Mode
 
 The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the exit class and waits for the transitionend event of the configured transition property. By default, this is the `.page-wrapper` containing the page's children. If options.items is configured, the event is instead tracked on the last item of the first group.
+<br/>
+Once the transition ends, the scroll position is restored and navigation is performed.
+<br/>
+After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
+<br/>
+For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array.
+<br/>
 
 ```tsx 
 <div data-transition>
@@ -129,13 +136,6 @@ The `TransitionProvider` uses a container with a `data-transition` attribute. Wh
 </div>
 
 ```
-
-Once the transition ends, the scroll position is restored and navigation is performed.  
-
-After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
-
-For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array.
-<br/>
 <br/>
 To access the overlay wrapper and its items, use `useTransitionContext`.
 
