@@ -10,11 +10,14 @@ export function transitionRunning(elArray: (HTMLDivElement|null)[], transitionPr
     }
     
     if(elArray[0].getAnimations().some((obj)=>{   
+
+        const progress = obj.effect?.getComputedTiming().progress
+
         return obj.playState === 'running' &&
         obj.effect instanceof KeyframeEffect &&
         obj.effect.getKeyframes().some(frame =>{
             return frame[property[transitionProperty]] !== undefined
-        })
+        }) && progress != null && progress !== 0
     })){
         return true
     }

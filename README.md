@@ -169,8 +169,20 @@ items: [1, 0]
 ```
   
 ```css
+[data-transition] .page-wrapper{
+    opacity: 1;
+    transition: opacity 0.5s linear;
+}
+[data-transition].exit .page-wrapper{
+    opacity: 0;
+}
+[data-transition].enter .page-wrapper{
+    opacity: 1;
+}
+
 [data-transition] .overlay-wrapper{
     position: fixed;
+    z-index: 99;
     inset: 0;
 
     display: grid;
