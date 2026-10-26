@@ -71,12 +71,12 @@ export function useHandleLinkClick({
             if(useUse.current){
                 resolveUseFn.current?.()
                 state.current='navigating'
-                router.push(currentPathname.current)
+                if(!nextPage.current)return
+                router.push(nextPage.current)
             }
 
             state.current = 'navigating'
             container.current?.classList.remove('exit')
-            void container.current?.offsetWidth
             container.current?.classList.add('enter')
 
             pollTransitionStart({
@@ -116,7 +116,8 @@ export function useHandleLinkClick({
         new Promise<void>((resolve)=>{
 
             if(state.current === 'navigating'){
-                if(basePathUrl === currentPathname.current){   
+                if(basePathUrl === currentPathname.current){ 
+                    afterExitFn.current?.()
                     return 
                 }else if(basePathUrl !== currentPathname.current){
                     
