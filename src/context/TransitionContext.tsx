@@ -11,10 +11,12 @@ import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 interface ContextProps{
     handleLinkClick: RefObject<((e: React.MouseEvent, url:string)=>void)>
-    overlayWrapper?: RefObject<HTMLDivElement|null>
-    overlayItems?: RefObject<(HTMLDivElement|null)[]>
     resolveFn?: RefObject<(()=>void)|null>
     state?: RefObject<'idle'|'exiting'|'entering'>
+    pageWrapper?: RefObject<HTMLDivElement|null>
+    overlayWrapper?: RefObject<HTMLDivElement|null>
+    overlayItems?: RefObject<(HTMLDivElement|null)[]>
+    secondItems?: RefObject<(HTMLDivElement|null)[]>
 }
 
 export const TransitionContext = createContext<ContextProps|null>(null)

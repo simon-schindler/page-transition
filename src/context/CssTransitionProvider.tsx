@@ -140,7 +140,7 @@ export function CssTransitionProvider({
         
     },[pathname])
       
-    const value=useMemo(()=>({handleLinkClick, overlayWrapper, overlayItems}),[])
+    const value=useMemo(()=>({handleLinkClick, pageWrapper, overlayWrapper, overlayItems, secondItems}),[])
 
     return(
         <TransitionContext.Provider value={value}>
