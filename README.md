@@ -42,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 |Prop|Type|Default|Mode|
 |---|---|---|---|
 | mode | "css" \| "manual" | "css" | Both |
-| scroll | "auto"\|"top" | "auto" | Both |
+| scroll | "auto" \| "top" | "auto" | Both |
 | outside | JSX | - | CSS |
 | options | *Options* | {} | CSS |
 
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 Select the transition mode.
 
 **scroll**  
-Controls browser scroll restoration during back and forward navigation.
+Controls browser scroll restoration during back and forward navigation.  
 `'auto'` Restores the previous scroll position.  
 `'top'` Scrolls to the top.
 
@@ -154,7 +154,12 @@ To access the page wrapper, overlay wrapper and its items, use `useTransitionCon
 ```ts
 import { useTransitionContext } from "page-transition"
 
-const { pageWrapper, overlayWrapper, overlayItems, secondItems } = useTransitionContext()
+const {
+    pageWrapper, 
+    overlayWrapper, 
+    overlayItems, 
+    secondItems 
+    } = useTransitionContext()
 ```
 
 #### CSS/SCSS Examples
@@ -364,7 +369,11 @@ items: [10, 10]
 In manual mode, you can control the transition using `useTransitionContext`.
 
 
-After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation. Before navigating, you should call `window.scrollTo(0, window.history.state.scrollY ?? 0)` to restore the previous scroll position. Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
+After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation.
+
+Before navigating, you should call `window.scrollTo(0, window.history.state.scrollY ?? 0)` to restore the previous scroll position.
+
+Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
 
 
 ```ts
