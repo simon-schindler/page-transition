@@ -27,20 +27,24 @@ interface TransitionOptions{
 interface DefaultOptions{
     transitionProperty: TransitionProperty
     items: [number, number]
+    scroll: 'auto'|'top'
 }
 interface ProviderProps{
     outside?: ReactNode
+    scroll: 'auto'|'top'
     options: TransitionOptions
     children: ReactNode
 }
 
 export function CssTransitionProvider({ 
     outside,
+    scroll,
     options, 
     children
 }:ProviderProps){
 
     const defaultOptions:DefaultOptions = {
+        scroll: scroll,
         items: [0, 0],
         ...options
     }
@@ -98,7 +102,7 @@ export function CssTransitionProvider({
         basePath,
         pollRafId
     })
-    useScrollRestoration()
+    useScrollRestoration({scroll})
 
     const removeEnter=useTransitionEndObj({
         transitionEndData,

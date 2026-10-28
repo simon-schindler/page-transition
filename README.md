@@ -42,6 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 |Prop|Type|Default|Mode|
 |---|---|---|---|
 | mode | "css" \| "manual" | "css" | Both |
+| scroll | "auto"\|"top"| "auto" | CSS |
 | outside | JSX | - | CSS |
 | options | *Options* | {} | CSS |
 
@@ -57,6 +58,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
 **mode**  
 Select the transition mode.
+
+**scroll**  
+Controls browser scroll restoration during back and forward navigation.
+`'auto'` Restores the previous scroll position.  
+`'top'` Scrolls to the top.
 
 **outside**  
 Components rendered outside .page-wrapper, but still inside the transition container.

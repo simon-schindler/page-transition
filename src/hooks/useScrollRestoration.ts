@@ -3,9 +3,11 @@
 import { useEffect, useRef } from "react";
 
 import { debounce } from "../functions/debounce";
-
-export function useScrollRestoration(){
-
+interface Props{
+    scroll: 'auto'|'top'
+}
+export function useScrollRestoration({scroll}:Props){
+    
     const saveScrollY=()=>{
         window.history.replaceState({
             ...window.history.state,
@@ -21,6 +23,10 @@ export function useScrollRestoration(){
     
     useEffect(()=>{
         window.history.scrollRestoration = 'manual'
+        
+        if(scroll === 'top'){
+            return()=>window.history.scrollRestoration = 'auto'
+        }
         
         const handleScroll=()=>{
             debounce({ref: debounceRef})

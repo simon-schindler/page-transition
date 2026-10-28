@@ -36,6 +36,7 @@ interface TransitionOptions{
 interface ProviderProps{
     outside?: ReactNode
     mode?: Mode
+    scroll?: 'auto'|'top'
     options: TransitionOptions
     children: ReactNode
 }
@@ -43,6 +44,7 @@ interface ProviderProps{
 export function TransitionProvider({
     outside,
     mode='css',
+    scroll='auto',
     options, 
     children
 }:ProviderProps){
@@ -51,6 +53,7 @@ export function TransitionProvider({
         mode === 'css'?
         <CssTransitionProvider
         outside={outside}
+        scroll={scroll}
         options={options}
         children={children}
         />:
