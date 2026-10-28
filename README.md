@@ -144,11 +144,11 @@ For overlay animations, an `.overlay-wrapper` is available. You can configure th
 ```
 
 
-To access the overlay wrapper and its items, use `useTransitionContext`.
+To access the page wrapper, overlay wrapper and its items, use `useTransitionContext`.
 ```ts
 import { useTransitionContext } from "page-transition"
 
-const { overlayWrapper, overlayItems } = useTransitionContext()
+const { pageWrapper, overlayWrapper, overlayItems, secondItems } = useTransitionContext()
 ```
 
 #### CSS/SCSS Examples
