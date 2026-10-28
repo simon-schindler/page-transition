@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 
 import { debounce } from "../functions/debounce";
+
 interface Props{
     scroll: 'auto'|'top'
 }
