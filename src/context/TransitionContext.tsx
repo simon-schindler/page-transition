@@ -58,6 +58,7 @@ export function TransitionProvider({
         children={children}
         />:
         <ManualTransitionProvider
+        scroll={scroll}
         children={children}
         />
     )

@@ -9,11 +9,14 @@ import type { ReactNode } from "react";
 
 import { usePopState } from "../hooks/manual/usePopState";
 import { useHandleLinkClick } from "../hooks/manual/useHandleLinkClick";
+import { useScrollRestoration } from "../hooks/useScrollRestoration";
 
 interface ProviderProps{
+    scroll: 'auto'|'top'
     children: ReactNode
 }
 export function ManualTransitionProvider({
+    scroll,
     children
 }:ProviderProps){
     
@@ -37,6 +40,7 @@ export function ManualTransitionProvider({
         useUse,
         resolveUseFn
     })
+    useScrollRestoration({ scroll })
 
     useEffect(()=>{
         state.current = 'entering'

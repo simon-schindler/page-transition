@@ -42,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 |Prop|Type|Default|Mode|
 |---|---|---|---|
 | mode | "css" \| "manual" | "css" | Both |
-| scroll | "auto"\|"top"| "auto" | CSS |
+| scroll | "auto"\|"top" | "auto" | Both |
 | outside | JSX | - | CSS |
 | options | *Options* | {} | CSS |
 
@@ -361,9 +361,10 @@ items: [10, 10]
 
 ### Manual Mode  
 
-In manual mode, you can control the transition using `useTransitionContext`.  
+In manual mode, you can control the transition using `useTransitionContext`.
 
-After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation. Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
+
+After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation. Before navigating, you should call `window.scrollTo(0, window.history.state.scrollY ?? 0)` to restore the previous scroll position. Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
 
 
 ```ts
