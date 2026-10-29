@@ -9,6 +9,8 @@ interface Props{
     handleLinkClick: RefObject<((e: React.MouseEvent, url: string)=>void)>
     resolveFn: RefObject<(()=>void)|null>
     state: RefObject<'idle'|'exiting'|'entering'>
+    currentPathname: RefObject<string>
+    basePath: RefObject<string|null>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
 }
@@ -17,6 +19,8 @@ export function useHandleLinkClick({
     handleLinkClick,
     resolveFn,
     state,
+    currentPathname,
+    basePath,
     useUse,
     resolveUseFn
 }:Props){
@@ -24,6 +28,8 @@ export function useHandleLinkClick({
     
     handleLinkClick.current = useCallback((e, url)=>{
         e.preventDefault()
+
+        const basePathUrl = basePath.current? basePath.current + url : url
 
         new Promise<void>((resolve)=>{
             resolveFn.current = resolve
@@ -33,6 +39,9 @@ export function useHandleLinkClick({
             if(useUse.current)resolveUseFn.current?.()
             router.push(url)
             resolveFn.current = null
+            if(basePathUrl === currentPathname.current){
+                state.current = 'entering'
+            }
         })
     },[])
 }

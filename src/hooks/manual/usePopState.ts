@@ -7,6 +7,7 @@ import type { RefObject } from "react";
 interface Props{
     resolveFn: RefObject<(()=>void)|null>
     state: RefObject<'idle'|'exiting'|'entering'>
+    currentPathname: RefObject<string>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
 }
@@ -14,6 +15,7 @@ interface Props{
 export function usePopState({
     resolveFn,
     state,
+    currentPathname,
     useUse,
     resolveUseFn
 }: Props){
@@ -31,7 +33,12 @@ export function usePopState({
                     resolveFn.current = resolve
                     resolveUseFn.current = reject
                     state.current = 'exiting'
-                }).then(()=>setPromise(null)).catch(()=>setPromise(null))
+                }).then(()=>{
+                    setPromise(null)
+                    if(window.location.pathname === currentPathname.current){
+                        state.current = 'entering'
+                    }
+                }).catch(()=>setPromise(null))
             )
         }
         window.addEventListener('popstate', handlePopstate)

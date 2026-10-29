@@ -27,39 +27,43 @@ export function useTransitionContext(){
     return context
 }
 
-type Mode = 'css'|'manual'
-
 interface TransitionOptions{
     transitionProperty: TransitionProperty
     items?: [number, number]
 }
-interface ProviderProps{
-    outside?: ReactNode
-    mode?: Mode
+interface BaseProps{
     scroll?: 'auto'|'top'
-    options: TransitionOptions
     children: ReactNode
 }
 
-export function TransitionProvider({
-    outside,
-    mode='css',
-    scroll='auto',
-    options, 
-    children
-}:ProviderProps){
+type ModeProps =
+    |{
+        mode?:'css'
+        outside?: ReactNode
+        options: TransitionOptions
+    }
+    |{
+        mode: 'manual'
+        outside?: never
+        options?: never
+    }
+
+type ProviderProps = BaseProps & ModeProps
+
+export function TransitionProvider(props: ProviderProps){
+    const { scroll = 'auto' } = props
     
     return(
-        mode === 'css'?
+        props.mode === 'css'?
         <CssTransitionProvider
-        outside={outside}
+        outside={props.outside}
         scroll={scroll}
-        options={options}
-        children={children}
+        options={props.options}
+        children={props.children}
         />:
         <ManualTransitionProvider
         scroll={scroll}
-        children={children}
+        children={props.children}
         />
     )
 }

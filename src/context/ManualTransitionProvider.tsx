@@ -24,12 +24,16 @@ export function ManualTransitionProvider({
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
     const resolveFn = useRef<(()=>void)|null>(null)
     const state = useRef<'idle'|'exiting'|'entering'>('idle')
+    const currentPathname = useRef(pathname)
+    const basePath = useRef<string|null>(null)
+    
     const useUse = useRef(false)
     const resolveUseFn = useRef<(()=>void)|null>(null)
     
     usePopState({
         resolveFn, 
         state,
+        currentPathname,
         useUse,
         resolveUseFn
     })
@@ -37,13 +41,20 @@ export function ManualTransitionProvider({
         handleLinkClick,
         resolveFn,
         state,
+        currentPathname,
+        basePath,
         useUse,
         resolveUseFn
     })
     useScrollRestoration({ scroll })
 
     useEffect(()=>{
+        if(basePath.current === null){
+            basePath.current = window.location.pathname.slice(0, -pathname.length)
+        }
+        
         state.current = 'entering'
+        currentPathname.current = window.location.pathname
     },[pathname])
 
     const value = useMemo(()=>({handleLinkClick, resolveFn, state}),[])
