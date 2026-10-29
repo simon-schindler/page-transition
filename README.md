@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.53-000000) ![69.7 KB](https://img.shields.io/badge/69.7_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.54-000000) ![70.7 KB](https://img.shields.io/badge/70.7_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -19,7 +19,7 @@ Import your page transition styles and wrap your page content with `TransitionPr
 
 ```tsx
 import { TransitionProvider } from "page-transition"
-import '.../your-page-transition-styles.css'
+import './transition-styles.css'
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -159,7 +159,7 @@ const {
     overlayWrapper, 
     overlayItems, 
     secondItems 
-    } = useTransitionContext()
+}   = useTransitionContext()
 ```
 
 #### CSS/SCSS Examples
