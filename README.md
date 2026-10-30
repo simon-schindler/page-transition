@@ -51,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 | Option | Type | Default | Required |
 |---|---|---|---|
 | transitionProperty | "opacity" \| "clip-path" \| "transform" | - | Yes |
+| overlay | boolean | "false" | - |
 | items | [number, number] | [0, 0] | - |
 
 
@@ -69,12 +70,14 @@ Components rendered outside .page-wrapper, but still inside the transition conta
 
 **options.transitionProperty**  
 Defines which property transitionend waits for.  
-  
-**options.items**
-<br/>
+
+
+**options.overlay**  
+Adds an element with the class `.overlay` to the transition container.
+
+**options.items**  
 `options.items[0]`
-Number of items in the first group. Each item receives the `.overlay-item` class.
-<br/>
+Number of items in the first group. Each item receives the `.overlay-item` class.  
 `options.items[1]`
 Number of items in the second group. Each item receives the `.second-item` class.
 
@@ -118,25 +121,27 @@ Triggers the transition.
 
 ### CSS Mode
 
-The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the exit class and waits for the transitionend event of the configured transition property. By default, this is the `.page-wrapper` containing the page's children. If options.items is configured, the event is instead tracked on the last item of the first group.
+The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the `exit` class and waits for the transitionend event of the configured `transition property`.
 
+By default, the event is tracked on `.page-wrapper`, which contains the page's children.
 
+If `options.overlay` is set to true, the event is tracked on `.overlay` instead. This is primarily intended for fade transitions.
+
+If `options.items` specifies one or more items in the first group, the event is tracked on the last item of that group.
+
+An `.overlay-wrapper` is available to group and position transition items. You can configure the number of items in each group using the `options.items` array.
 
 Once the transition ends, the scroll position is restored and navigation is performed.
 
-
-
 After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
-
-
-
-For overlay animations, an `.overlay-wrapper` is available. You can configure the number of overlay items using the options.items array.
-
-
 
 ```tsx 
 <div data-transition>
     {outside}
+    {
+        options.overlay &&
+        <div className="overlay"/>
+    }
     {
         (options.items[0] > 0 ||  options.items[1] > 0) &&
         <div className="overlay-wrapper">
@@ -150,12 +155,13 @@ For overlay animations, an `.overlay-wrapper` is available. You can configure th
 ```
 
 
-To access the page wrapper, overlay wrapper and its items, use `useTransitionContext`.
+To access the page wrapper, overlay, overlay wrapper, and their respective items, use `useTransitionContext`.
 ```ts
 import { useTransitionContext } from "page-transition"
 
 const {
-    pageWrapper, 
+    pageWrapper,
+    overlay, 
     overlayWrapper, 
     overlayItems, 
     secondItems 
@@ -170,21 +176,27 @@ options
 
 ```ts
 transitionProperty: "opacity"
+overlay: true
 
 ```
 
 ```css
-[data-transition] .page-wrapper{
+[data-transition] .overlay{
+    position: fixed;
+    z-index: 98;
+    inset: 0;
+    background: white;
+    
+    opacity: 0;
     will-change: opacity;
-    opacity: 1;
 }
-[data-transition].exit .page-wrapper{
-   opacity: 0;  
+[data-transition].exit .overlay{
+   opacity: 1;  
    transition: opacity 0.4s ease;
    
 }
-[data-transition].enter .page-wrapper{
-    opacity: 1;
+[data-transition].enter .overlay{
+    opacity: 0;
     transition: opacity 0.5s ease;
 }
 ```
@@ -197,19 +209,28 @@ options
 
 ```ts
 transitionProperty: "clip-path"  
+overlay: true
 items: [1, 0]
 ```
   
 ```css
-[data-transition] .page-wrapper{
-    opacity: 1;
-    transition: opacity 0.5s linear;
-}
-[data-transition].exit .page-wrapper{
+[data-transition] .overlay{
+    position: fixed;
+    z-index: 98;
+    inset: 0;
+    background: white;
+    
     opacity: 0;
+    will-change: opacity;
 }
-[data-transition].enter .page-wrapper{
-    opacity: 1;
+[data-transition].exit .overlay{
+   opacity: 1;  
+   transition: opacity 0.4s ease;
+   
+}
+[data-transition].enter .overlay{
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
 [data-transition] .overlay-wrapper{

@@ -22,10 +22,12 @@ import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 interface TransitionOptions{
     transitionProperty: TransitionProperty
+    overlay?: boolean
     items?: [number, number]
 }
 interface DefaultOptions{
     transitionProperty: TransitionProperty
+    overlay?: boolean
     items: [number, number]
 }
 interface ProviderProps{
@@ -49,6 +51,8 @@ export function CssTransitionProvider({
 
     const container = useRef<HTMLDivElement|null>(null)
     const pageWrapper = useRef<HTMLDivElement|null>(null)
+    
+    const overlay = useRef<HTMLDivElement|null>(null)
     const overlayWrapper = useRef<HTMLDivElement|null>(null)
     const overlayItems = useRef<(HTMLDivElement|null)[]>([])
     const secondItems = useRef<(HTMLDivElement|null)[]>([])
@@ -70,8 +74,13 @@ export function CssTransitionProvider({
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
     const transitionEndHandler = useTransitionEndHandler()
+    
+    const elArray = defaultOptions.items[0] === 0 && 
+        !defaultOptions.overlay ? 
+        pageWrapper : defaultOptions.items[0] > 0 ? overlayItems : overlay
+
     const transitionEndData = useTransitionEndData({
-        elArray: defaultOptions.items[0] === 0 ? pageWrapper : overlayItems,
+        elArray,
         transitionProperty: defaultOptions.transitionProperty,
         secondElArray: secondItems
     })
@@ -142,7 +151,14 @@ export function CssTransitionProvider({
         
     },[pathname])
       
-    const value=useMemo(()=>({handleLinkClick, pageWrapper, overlayWrapper, overlayItems, secondItems}),[])
+    const value=useMemo(()=>({
+        handleLinkClick, 
+        pageWrapper,
+        overlay, 
+        overlayWrapper, 
+        overlayItems, 
+        secondItems
+    }),[])
 
     return(
         <TransitionContext.Provider value={value}>
@@ -151,6 +167,13 @@ export function CssTransitionProvider({
             data-transition
             >
                 {outside}
+                {
+                    defaultOptions.overlay && 
+                    <div 
+                    ref={overlay}
+                    className="overlay"
+                    />
+                }
                 {
                     (defaultOptions.items[0] > 0 ||  defaultOptions.items[1] > 0) && 
                     <div 

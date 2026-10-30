@@ -14,6 +14,7 @@ interface ContextProps{
     resolveFn?: RefObject<(()=>void)|null>
     state?: RefObject<'idle'|'exiting'|'entering'>
     pageWrapper?: RefObject<HTMLDivElement|null>
+    overlay?: RefObject<HTMLDivElement|null>
     overlayWrapper?: RefObject<HTMLDivElement|null>
     overlayItems?: RefObject<(HTMLDivElement|null)[]>
     secondItems?: RefObject<(HTMLDivElement|null)[]>
@@ -29,6 +30,7 @@ export function useTransitionContext(){
 
 interface TransitionOptions{
     transitionProperty: TransitionProperty
+    overlay?: boolean
     items?: [number, number]
 }
 interface BaseProps{
