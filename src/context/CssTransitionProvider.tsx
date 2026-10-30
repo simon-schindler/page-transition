@@ -1,6 +1,6 @@
 "use client"
 
-import {TransitionContext} from "./TransitionContext"
+import { CssContext } from "./CssContext";
 
 import { useRef, useMemo, useEffect} from "react";
 import { usePathname } from "next/navigation";
@@ -161,7 +161,7 @@ export function CssTransitionProvider({
     }),[])
 
     return(
-        <TransitionContext.Provider value={value}>
+        <CssContext.Provider value={value}>
             <div 
             ref={container}
             data-transition
@@ -210,6 +210,6 @@ export function CssTransitionProvider({
                     {children}
                 </div>
             </div>
-        </TransitionContext.Provider>
+        </CssContext.Provider>
     )
 }

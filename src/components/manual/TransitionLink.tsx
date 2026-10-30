@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { useTransitionContext } from "../context/TransitionContext"
+import { useManualContext } from "../../context/ManualContext"
 
 import type { ReactNode } from "react"
 
@@ -20,7 +20,7 @@ export function TransitionLink({
     children
 }: Props){
     
-    const {handleLinkClick} = useTransitionContext()
+    const { handleLinkClick } = useManualContext()
 
     return(
         <Link 

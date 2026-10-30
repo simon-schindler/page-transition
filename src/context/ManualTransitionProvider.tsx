@@ -1,6 +1,6 @@
 "use client"
 
-import {TransitionContext} from "./TransitionContext"
+import { ManualContext } from "./ManualContext";
 
 import { useEffect, useRef, useMemo } from "react"
 import { usePathname } from "next/navigation";
@@ -60,8 +60,8 @@ export function ManualTransitionProvider({
     const value = useMemo(()=>({handleLinkClick, resolveFn, state}),[])
     
     return(
-        <TransitionContext.Provider value={value}>
+        <ManualContext.Provider value={value}>
             {children}
-        </TransitionContext.Provider>
+        </ManualContext.Provider>
     )
 }

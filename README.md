@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.57-000000) ![71.7 KB](https://img.shields.io/badge/71.7_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.59-000000) ![82.1 KB](https://img.shields.io/badge/82.1_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -102,7 +102,7 @@ options={{
 | href | string | - | Yes |
 | className | string | - | - |
 | scroll | boolean | true | - |
-| prefetch | "auto" \| null | null | - |
+| prefetch | boolean \| "auto" \| null | null | - |
 | onClick | (e: React.MouseEvent)=>void | - | - |
 
 **Prop Descriptions**  
@@ -111,7 +111,17 @@ TransitionLink uses the Next.js Link component internally. For details about nav
 **Description**  
 Triggers the transition. 
 
-*Must be used within the TransitionProvider*  
+*Must be used within the TransitionProvider*
+
+`css`
+```tsx
+import {TransitionLink} from "page-transition/css"
+
+```  
+`manual`
+```tsx
+import {TransitionLink} from "page-transition/manual"
+```
 
 ```tsx
 <TransitionLink href={"/home"}>
@@ -155,9 +165,9 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
 ```
 
 
-To access the page wrapper, overlay, overlay wrapper, and their respective items, use `useTransitionContext`.
+To access the page wrapper, overlay, overlay wrapper, and their respective items, use `useCssContext`.
 ```ts
-import { useTransitionContext } from "page-transition"
+import { useCssContext } from "page-transition"
 
 const {
     pageWrapper,
@@ -165,7 +175,7 @@ const {
     overlayWrapper, 
     overlayItems, 
     secondItems 
-}   = useTransitionContext()
+}   = useCssContext()
 ```
 
 #### CSS/SCSS Examples
@@ -387,7 +397,7 @@ items: [10, 10]
 
 ### Manual Mode  
 
-In manual mode, you can control the transition using `useTransitionContext`.
+In manual mode, you can control the transition using `useManualContext`.
 
 
 After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation.
@@ -398,8 +408,8 @@ Once `state.current` is set to `entering`, the navigation has occurred. After th
 
 
 ```ts
-import { useTransitionContext } from "page-transition"
+import { useManualContext } from "page-transition"
 
-const { resolveFn, state } = useTransitionContext()
+const { resolveFn, state } = useManualContext()
 
 ```
