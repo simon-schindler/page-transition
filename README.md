@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.59-000000) ![82.1 KB](https://img.shields.io/badge/82.1_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.0--beta.60-000000) ![82.2 KB](https://img.shields.io/badge/82.2_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -114,12 +114,12 @@ Triggers the transition.
 
 *Must be used within the TransitionProvider*
 
-`css`
+css
 ```tsx
 import {TransitionLink} from "page-transition/css"
 
 ```  
-`manual`
+manual
 ```tsx
 import {TransitionLink} from "page-transition/manual"
 ```
@@ -166,9 +166,9 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
 ```
 
 
-To access the page wrapper, overlay, overlay wrapper, and their respective items, use `useCssContext`.
+To access the page wrapper, overlay, overlay wrapper, and their respective items, use `useTransitionContext`.
 ```ts
-import { useCssContext } from "page-transition"
+import { useTransitionContext } from "page-transition/css"
 
 const {
     pageWrapper,
@@ -397,7 +397,7 @@ items: [10, 10]
 
 ### Manual Mode  
 
-In manual mode, you can control the transition using `useManualContext`.
+In manual mode, you can control the transition using `useTransitionContext`.
 
 
 After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation.
@@ -408,8 +408,8 @@ Once `state.current` is set to `entering`, the navigation has occurred. After th
 
 
 ```ts
-import { useManualContext } from "page-transition"
+import { useTransitionContext } from "page-transition/manual"
 
-const { resolveFn, state } = useManualContext()
+const { resolveFn, state } = useTransitionContext()
 
 ```

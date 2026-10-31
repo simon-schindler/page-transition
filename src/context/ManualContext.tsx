@@ -11,7 +11,7 @@ interface ContextProps{
 
 export const ManualContext = createContext<ContextProps|null>(null)
 
-export function useManualContext(){
+export function useTransitionContext(){
     const context = useContext(ManualContext);
     if(!context)throw new Error('useManualContext in Provider!')
     return context

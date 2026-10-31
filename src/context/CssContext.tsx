@@ -14,7 +14,7 @@ interface ContextProps{
 
 export const CssContext = createContext<ContextProps|null>(null)
 
-export function useCssContext(){
+export function useTransitionContext(){
     const context = useContext(CssContext);
     if(!context)throw new Error('useCssContext in Provider!')
     return context
