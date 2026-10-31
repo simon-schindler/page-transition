@@ -176,7 +176,7 @@ const {
     overlayWrapper, 
     overlayItems, 
     secondItems 
-}   = useCssContext()
+}   = useTransitionContext()
 ```
 
 #### CSS/SCSS Examples
