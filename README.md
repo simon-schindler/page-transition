@@ -86,8 +86,9 @@ Number of items in the second group. Each item receives the `.second-item` class
 <TransitionProvider
 outside={<Header/>}
 options={{
-  transitionProperty: "clip-path",
-  items: [1, 0]
+    overlay: true,
+    transitionProperty: "clip-path",
+    items: [1, 0]
 }}
 >
   {children}
@@ -213,7 +214,7 @@ overlay: true
 </details>
 
 <details>
-<summary>Single Overlay</summary>
+<summary>Single Overlay and Opacity</summary>
 <br/>
 options
 
@@ -392,7 +393,6 @@ items: [10, 10]
 
 ```
 </details>
-
 
 
 ### Manual Mode  
