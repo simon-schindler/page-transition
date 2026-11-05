@@ -14,7 +14,6 @@ export function useTransitionEndObj({transitionEndData, fn}:Props){
     const transitionEndObj=useRef<TransitionEndObj>({
         elArray: [],
         transitionProperty: transitionEndData.current.transitionProperty,
-        secondElArray:[],
         fn: null
     })
 

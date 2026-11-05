@@ -1,15 +1,22 @@
 import type { TransitionProperty } from "../types/transitionPropertys.types"
 
-export function transitionRunning(elArray: (HTMLDivElement|null)[], transitionProperty:TransitionProperty):null|boolean{
-    if(!elArray[0])return null
+export function transitionRunning(elArray: (HTMLDivElement|null)[], transitionProperty:TransitionProperty, group:'overlay'|null):null|boolean{
+    let el;
     
+    if(group === 'overlay'){
+        el = elArray[elArray.length-1]
+    }else{
+        if(!elArray[0])return null
+        el = elArray[0]
+    }
+
     const property = {
         opacity: 'opacity',
         'clip-path': 'clipPath',
         'transform': 'transform'
     }
-    
-    if(elArray[0].getAnimations().some((obj)=>{   
+    if(!el)return null
+    if(el.getAnimations().some((obj)=>{   
 
         const progress = obj.effect?.getComputedTiming().progress
 

@@ -22,12 +22,12 @@ import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 interface TransitionOptions{
     transitionProperty: TransitionProperty
-    overlay?: boolean
+    overlays?: number
     items?: [number, number]
 }
 interface DefaultOptions{
     transitionProperty: TransitionProperty
-    overlay?: boolean
+    overlays: number
     items: [number, number]
 }
 interface ProviderProps{
@@ -45,6 +45,7 @@ export function CssTransitionProvider({
 }:ProviderProps){
 
     const defaultOptions:DefaultOptions = {
+        overlays: 0,
         items: [0, 0],
         ...options
     }
@@ -52,10 +53,12 @@ export function CssTransitionProvider({
     const container = useRef<HTMLDivElement|null>(null)
     const pageWrapper = useRef<HTMLDivElement|null>(null)
     
-    const overlay = useRef<HTMLDivElement|null>(null)
-    const overlayWrapper = useRef<HTMLDivElement|null>(null)
-    const overlayItems = useRef<(HTMLDivElement|null)[]>([])
+    const overlays = useRef<(HTMLDivElement|null)[]>([])
+    const itemWrapper = useRef<HTMLDivElement|null>(null)
+    const firstItems = useRef<(HTMLDivElement|null)[]>([])
     const secondItems = useRef<(HTMLDivElement|null)[]>([])
+
+    const group=useRef<'overlay'|null>(null)
     
     const pathname = usePathname()
     const currentPathname = useRef(pathname)
@@ -76,13 +79,17 @@ export function CssTransitionProvider({
     const transitionEndHandler = useTransitionEndHandler()
     
     const elArray = defaultOptions.items[0] === 0 && 
-        !defaultOptions.overlay ? 
-        pageWrapper : defaultOptions.items[0] > 0 ? overlayItems : overlay
+        defaultOptions.overlays === 0 ? 
+        pageWrapper : defaultOptions.items[0] > 0 ? firstItems :
+        defaultOptions.overlays > 0 ? overlays : pageWrapper
+
+    group.current = defaultOptions.overlays > 0 && defaultOptions.items[0] === 0 ?
+    'overlay':null
 
     const transitionEndData = useTransitionEndData({
         elArray,
         transitionProperty: defaultOptions.transitionProperty,
-        secondElArray: secondItems
+        group: group
     })
 
     const pollRafId = useRef<number|null>(null)
@@ -154,9 +161,9 @@ export function CssTransitionProvider({
     const value=useMemo(()=>({
         handleLinkClick, 
         pageWrapper,
-        overlay, 
-        overlayWrapper, 
-        overlayItems, 
+        overlays, 
+        itemWrapper, 
+        firstItems, 
         secondItems
     }),[])
 
@@ -166,28 +173,31 @@ export function CssTransitionProvider({
             ref={container}
             data-transition
             >
-                {outside}
                 {
-                    defaultOptions.overlay && 
-                    <div 
-                    ref={overlay}
-                    className="overlay"
-                    />
+                    defaultOptions.overlays > 0 && 
+                    Array.from({length: defaultOptions.overlays}).map((_,i)=>(
+                        <div 
+                        key={`overlay-${i}`}
+                        ref={(el)=>{overlays.current[i]=el}}
+                        className="overlay"
+                        />
+                    ))
+                    
                 }
                 {
                     (defaultOptions.items[0] > 0 ||  defaultOptions.items[1] > 0) && 
                     <div 
-                    ref={overlayWrapper}
-                    className="overlay-wrapper"
+                    ref={itemWrapper}
+                    className="item-wrapper"
                     >
                         {
                             defaultOptions.items[0] > 0 && Array.from({length: defaultOptions.items[0]}).map((_,i)=>(
                                 <div 
                                 key={i}
                                 ref={(el)=>{
-                                    overlayItems.current[i]=el
+                                    firstItems.current[i]=el
                                 }}
-                                className="overlay-item"/>
+                                className="first-item"/>
                             ))
                         }
                         {
@@ -203,6 +213,7 @@ export function CssTransitionProvider({
                         }
                     </div>
                 }
+                {outside}
                 <div 
                 ref={pageWrapper}
                 className={"page-wrapper"}

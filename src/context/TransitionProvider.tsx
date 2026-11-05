@@ -8,7 +8,7 @@ import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 interface TransitionOptions{
     transitionProperty: TransitionProperty
-    overlay?: boolean
+    overlays?: number
     items?: [number, number]
 }
 interface BaseProps{

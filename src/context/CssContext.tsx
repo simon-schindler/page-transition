@@ -6,9 +6,9 @@ import type { RefObject } from "react";
 interface ContextProps{
     handleLinkClick: RefObject<((e: React.MouseEvent, url:string)=>void)>
     pageWrapper?: RefObject<HTMLDivElement|null>
-    overlay?: RefObject<HTMLDivElement|null>
-    overlayWrapper?: RefObject<HTMLDivElement|null>
-    overlayItems?: RefObject<(HTMLDivElement|null)[]>
+    overlays?: RefObject<(HTMLDivElement|null)[]>
+    itemWrapper?: RefObject<HTMLDivElement|null>
+    firstItems?: RefObject<(HTMLDivElement|null)[]>
     secondItems?: RefObject<(HTMLDivElement|null)[]>
 }
 

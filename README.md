@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.0--beta.62-000000) ![82.2 KB](https://img.shields.io/badge/82.2_KB-1677FF)  
+![Version](https://img.shields.io/badge/v_0.1.1-000000) ![82.5 KB](https://img.shields.io/badge/82.5_KB-1677FF)  
   
   `npm install page-transition@beta`  
   
@@ -51,7 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 | Option | Type | Default | Required |
 |---|---|---|---|
 | transitionProperty | "opacity" \| "clip-path" \| "transform" | - | Yes |
-| overlay | boolean | "false" | - |
+| overlays | number | 0 | - |
 | items | [number, number] | [0, 0] | - |
 
 
@@ -72,12 +72,13 @@ Components rendered outside .page-wrapper, but still inside the transition conta
 Defines which property transitionend waits for.  
 
 
-**options.overlay**  
-Adds an element with the class `.overlay` to the transition container.
+**options.overlays**  
+Number of overlay elements to add to the transition container.  
+Each element receives the `.overlay` class.
 
 **options.items**  
 `options.items[0]`
-Number of items in the first group. Each item receives the `.overlay-item` class.  
+Number of items in the first group. Each item receives the `.first-item` class.  
 `options.items[1]`
 Number of items in the second group. Each item receives the `.second-item` class.
 
@@ -86,9 +87,8 @@ Number of items in the second group. Each item receives the `.second-item` class
 <TransitionProvider
 outside={<Header/>}
 options={{
-    overlay: true,
+    overlays: 2,
     transitionProperty: "clip-path",
-    items: [1, 0]
 }}
 >
   {children}
@@ -136,11 +136,11 @@ The `TransitionProvider` uses a container with a `data-transition` attribute. Wh
 
 By default, the event is tracked on `.page-wrapper`, which contains the page's children.
 
-If `options.overlay` is set to true, the event is tracked on `.overlay` instead. This is primarily intended for fade transitions.
+If `options.overlays` is greater than 0, the transition event is tracked on the last element of the overlay group.
 
-If `options.items` specifies one or more items in the first group, the event is tracked on the last item of that group.
+If `options.items` specifies one or more items, the transition event is tracked on the last item of the first group.
 
-An `.overlay-wrapper` is available to group and position transition items. You can configure the number of items in each group using the `options.items` array.
+The `.item-wrapper` is provided to group and position transition items. It is primarily intended for transitions that require multiple grouped elements. The number of items in each group can be configured using the options.items array.
 
 Once the transition ends, the scroll position is restored and navigation is performed.
 
@@ -148,17 +148,15 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
 
 ```tsx 
 <div data-transition>
+    <div className="overlay"/>
+
+    <div className="item-wrapper">
+        <div className="first-item"/>
+        <div className="second-item"/>
+    </div>
+
     {outside}
-    {
-        options.overlay &&
-        <div className="overlay"/>
-    }
-    {
-        (options.items[0] > 0 ||  options.items[1] > 0) &&
-        <div className="overlay-wrapper">
-            ...
-        </div>
-    }
+
     <div className={"page-wrapper"}>
         {children}
     </div>
@@ -166,15 +164,15 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
 ```
 
 
-To access the page wrapper, overlay, overlay wrapper, and their respective items, use `useTransitionContext`.
+To access the page wrapper, overlays, item wrapper, and their respective items, use `useTransitionContext`.
 ```ts
 import { useTransitionContext } from "page-transition/css"
 
 const {
     pageWrapper,
-    overlay, 
-    overlayWrapper, 
-    overlayItems, 
+    overlays, 
+    itemWrapper, 
+    firstItems, 
     secondItems 
 }   = useTransitionContext()
 ```
@@ -187,7 +185,7 @@ options
 
 ```ts
 transitionProperty: "opacity"
-overlay: true
+overlays: 1
 
 ```
 
@@ -199,6 +197,7 @@ overlay: true
     background: white;
     
     opacity: 0;
+    pointer-events: none;
     will-change: opacity;
 }
 [data-transition].exit .overlay{
@@ -214,55 +213,52 @@ overlay: true
 </details>
 
 <details>
-<summary>Single Overlay and Opacity</summary>
+<summary>Combined Opacity and Clip-Path</summary>
 <br/>
 options
 
 ```ts
 transitionProperty: "clip-path"  
-overlay: true
-items: [1, 0]
+overlays: 2
+
 ```
   
 ```css
-[data-transition] .overlay{
+[data-transition] .overlay:nth-child(1){
     position: fixed;
     z-index: 98;
     inset: 0;
     background: white;
     
     opacity: 0;
+    pointer-events: none;
     will-change: opacity;
 }
-[data-transition].exit .overlay{
+[data-transition].exit .overlay:nth-child(1){
    opacity: 1;  
    transition: opacity 0.4s ease;
    
 }
-[data-transition].enter .overlay{
+[data-transition].enter .overlay:nth-child(1){
     opacity: 0;
     transition: opacity 0.5s ease;
 }
 
-[data-transition] .overlay-wrapper{
+[data-transition] .overlay:nth-child(2){
     position: fixed;
     z-index: 99;
     inset: 0;
 
-    display: grid;
-    grid-template-columns: 1fr;
-}
-[data-transition] .overlay-item{
     background: black;
     transition: none;
     will-change: clip-path;
     clip-path: inset(100% 0 0 0);
 }
-[data-transition].exit .overlay-item{
+[data-transition].exit .overlay:nth-child(2){
     clip-path: inset(0 0 0 0);
     transition: clip-path 1.2s ease;
 }
-[data-transition].enter .overlay-item{
+[data-transition].enter .overlay:nth-child(2){
     clip-path: inset(0 0 100% 0);
     transition: clip-path 1.2s ease;
 }
@@ -280,20 +276,20 @@ items: [10, 0]
 ```
 
 ```scss
-[data-transition] .overlay-wrapper{
+[data-transition] .item-wrapper{
     position: fixed;
     inset: 0;
 
     display: grid;
     grid-template-columns: repeat(10, 1fr);
 }
-[data-transition] .overlay-item{
+[data-transition] .first-item{
     background: black;
     transition: none;
     will-change: clip-path;
     clip-path: inset(100% -1px 0 -1px);
 }
-[data-transition].exit .overlay-item{
+[data-transition].exit .first-item{
     clip-path: inset(0 -1px 0 -1px);
     transition: clip-path 1.0s ease;
     @for $i from 0 to 10{
@@ -302,7 +298,7 @@ items: [10, 0]
         }
     }
 }
-[data-transition].enter .overlay-item{
+[data-transition].enter .first-item{
     clip-path: inset(0 -1px 100% -1px);
     transition: clip-path 1.0s ease;
     @for $i from 0 to 10{
@@ -325,7 +321,7 @@ items: [10, 10]
 ```
 
 ```scss
-[data-transition] .overlay-wrapper{
+[data-transition] .item-wrapper{
     position: fixed;
     inset: 0;
 
@@ -333,7 +329,7 @@ items: [10, 10]
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(2, 1fr);
 }
-[data-transition] .overlay-item{
+[data-transition] .first-item{
     grid-row: 1;
     background: black;
   
@@ -341,7 +337,7 @@ items: [10, 10]
     will-change: clip-path;
     clip-path: inset(0 -1px 100% -1px);
 }
-[data-transition].exit .overlay-item{
+[data-transition].exit .first-item{
     grid-row: 1;
     clip-path: inset(0 -1px 0 -1px);
     transition: clip-path 1.2s ease;
@@ -351,7 +347,7 @@ items: [10, 10]
         }
     }
 }
-[data-transition].enter .overlay-item{
+[data-transition].enter .first-item{
     grid-row: 1;
     clip-path: inset(0 -1px 100% -1px);
     transition: clip-path 1.2s ease;
