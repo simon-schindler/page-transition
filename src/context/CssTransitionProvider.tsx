@@ -78,11 +78,9 @@ export function CssTransitionProvider({
 
     const transitionEndHandler = useTransitionEndHandler()
     
-    const elArray = defaultOptions.items[0] === 0 && 
-        defaultOptions.overlays === 0 ? 
-        pageWrapper : defaultOptions.items[0] > 0 ? firstItems :
+    const elArray = defaultOptions.items[0] > 0 ? firstItems : 
         defaultOptions.overlays > 0 ? overlays : pageWrapper
-
+        
     group.current = defaultOptions.overlays > 0 && defaultOptions.items[0] === 0 ?
     'overlay':null
 
