@@ -74,6 +74,7 @@ export function CssTransitionProvider({
     const useUse = useRef(false)
     const resolveUseFn = useRef<(()=>void)|null>(null)
     
+    
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
     const transitionEndHandler = useTransitionEndHandler()
@@ -130,6 +131,7 @@ export function CssTransitionProvider({
         ){
             currentPathname.current = window.location.pathname
             basePath.current = window.location.pathname.slice(0, -pathname.length)
+            
             return
         }
         mount.current.mounted = true
@@ -215,8 +217,8 @@ export function CssTransitionProvider({
                 <div 
                 ref={pageWrapper}
                 className={"page-wrapper"}
-                >
-                    {children}
+                >          
+                {children} 
                 </div>
             </div>
         </CssContext.Provider>

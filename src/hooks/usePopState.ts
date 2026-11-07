@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, use } from "react"
 
-import type { RefObject } from "react"
+import type { Dispatch, RefObject, SetStateAction } from "react"
 
 import { useTransitionEndObj } from "./useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
@@ -19,9 +19,7 @@ interface Props{
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
-    pollRafId: RefObject<number|null>
-    
-    
+    pollRafId: RefObject<number|null> 
 }
 export function usePopState({
     container,
@@ -34,14 +32,16 @@ export function usePopState({
     pollRafId
 }:Props){
 
-    const [promise, setPromise]=useState<null| Promise<void>>(null)
-    
-    if(promise){
+    const [_, rerender]=useState<number>(0)
+    const promise =useRef<null| Promise<void>>(null)
+
+    if(promise.current){
         useUse.current = true
-        use(promise)
+        use(promise.current)
     }else{
         useUse.current = false
     }
+        
 
     const resolveFn = useRef<(()=>void)|null>(null)
     const afterExitFn = useRef<(()=>void)|null>(null)
@@ -66,7 +66,8 @@ export function usePopState({
             container.current?.classList.add('enter')
             
             resolveFn.current?.()
-            setPromise(null)
+            
+            promise.current=null
             useUse.current = false
             
             pollTransitionStart({
@@ -85,7 +86,8 @@ export function usePopState({
             window.scrollTo(0,window.history.state.scrollY??0)
             
             resolveFn.current?.()
-            setPromise(null)
+            
+            promise.current=null
             useUse.current = false
         }
     })
@@ -107,73 +109,76 @@ export function usePopState({
     })
    
     useEffect(()=>{
-        
         const handlePopstate=()=>{
             
-            setPromise(
-                new Promise<void>((resolve, reject)=>{
+            promise.current = new Promise<void>((resolve, reject)=>{
 
-                    resolveFn.current = resolve
-                    resolveUseFn.current = reject
+                resolveFn.current = resolve
+                resolveUseFn.current = reject
                     
-                    new Promise<void>((resolveNavigating)=>{
-                        
-                        if(state.current === "navigating"){
+                new Promise<void>((resolveNavigating)=>{
+  
+                    if(state.current === "navigating"){
                             
-                            if(currentPathname.current !== window.location.pathname){
-                                state.current = 'navigating'
-                                resolveFn.current?.()
-                                setPromise(null)
-                                return
-                            }
-                            else if(currentPathname.current === window.location.pathname){
-                                afterExitFn.current?.()
-                            }
-                        }else{
-                            resolveNavigating()
-                        }
-                    }).then(()=>{
-
-                        if(currentPathname.current === window.location.pathname 
-                            && state.current === 'exiting' ){
-                            transitionEnd({
-                                transitionEndObj:afterExit,
-                                transitionEndHandler
-                            })
-                            return
-                            }
-
-                        if(state.current === 'entering' && 
-                            currentPathname.current === window.location.pathname
-                        ){
-                            transitionEnd({
-                                transitionEndObj: removeEnter, 
-                                transitionEndHandler
-                            })
+                        if(currentPathname.current !== window.location.pathname){
+                            state.current = 'navigating'
+                            resolveFn.current?.()
+                                
+                            promise.current=null
                             return
                         }
-                            
-                        if(state.current === 'idle'|| state.current === 'exiting'){
-                                
-                            transitionEnd({
-                                transitionEndObj: pop, 
-                                transitionEndHandler     
-                            })
-
-                            container.current?.classList.remove('enter')
-                            container.current?.classList.add('exit')
-                                
-                            state.current='exiting'
-
-                        }else{
-                            transitionEnd({
-                                transitionEndObj: afterEntering,
-                                transitionEndHandler
-                            })
+                        else if(currentPathname.current === window.location.pathname){
+                            afterExitFn.current?.()
                         }
-                    })             
-                }).catch(()=>setPromise(null))
-            )
+                    }else{
+                        resolveNavigating()
+                    }
+                }).then(()=>{
+
+                    if(currentPathname.current === window.location.pathname 
+                        && state.current === 'exiting' ){
+                        transitionEnd({
+                            transitionEndObj:afterExit,
+                            transitionEndHandler
+                        })
+                        return
+                        }
+
+                    if(state.current === 'entering' && 
+                        currentPathname.current === window.location.pathname
+                    ){
+                        transitionEnd({
+                            transitionEndObj: removeEnter, 
+                            transitionEndHandler
+                        })
+                        return
+                    }
+                            
+                    if(state.current === 'idle'|| state.current === 'exiting'){
+                                
+                        transitionEnd({
+                            transitionEndObj: pop, 
+                            transitionEndHandler     
+                        })
+
+                        container.current?.classList.remove('enter')
+                        container.current?.classList.add('exit')
+                                
+                        state.current='exiting'
+
+                    }else{
+                        transitionEnd({
+                            transitionEndObj: afterEntering,
+                            transitionEndHandler
+                        })
+                    }
+                })             
+            }).catch(()=>{
+                promise.current=null
+            })
+            
+            rerender((prev)=>++prev)
+            
         }
         window.addEventListener('popstate', handlePopstate)
         

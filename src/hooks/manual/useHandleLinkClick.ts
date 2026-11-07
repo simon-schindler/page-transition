@@ -28,7 +28,7 @@ export function useHandleLinkClick({
     
     handleLinkClick.current = useCallback((e, url)=>{
         e.preventDefault()
-
+        
         const basePathUrl = basePath.current? basePath.current + url : url
 
         new Promise<void>((resolve)=>{

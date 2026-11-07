@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v_0.1.1-000000) ![82.5 KB](https://img.shields.io/badge/82.5_KB-1677FF)  
+![Version](https://img.shields.io/badge/v0.1.2-000000) ![83.1 KB](https://img.shields.io/badge/82.5_KB-1677FF)  
   
   `npm install page-transition`  
   
@@ -197,8 +197,8 @@ overlays: 1
     background: white;
     
     opacity: 0;
-    pointer-events: none;
     will-change: opacity;
+    pointer-events: none;
 }
 [data-transition].exit .overlay{
    opacity: 1;  
@@ -232,7 +232,6 @@ overlays: 2
     
     opacity: 0;
     pointer-events: none;
-    will-change: opacity;
 }
 [data-transition].exit .overlay:nth-child(1){
    opacity: 1;  
@@ -251,8 +250,9 @@ overlays: 2
 
     background: black;
     transition: none;
-    will-change: clip-path;
     clip-path: inset(100% 0 0 0);
+    will-change: clip-path;
+    pointer-events: none;
 }
 [data-transition].exit .overlay:nth-child(2){
     clip-path: inset(0 0 0 0);
@@ -282,6 +282,7 @@ items: [10, 0]
 
     display: grid;
     grid-template-columns: repeat(10, 1fr);
+    pointer-events: none;
 }
 [data-transition] .first-item{
     background: black;
@@ -328,6 +329,7 @@ items: [10, 10]
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(2, 1fr);
+    pointer-events: none;
 }
 [data-transition] .first-item{
     grid-row: 1;
@@ -398,7 +400,9 @@ In manual mode, you can control the transition using `useTransitionContext`.
 
 After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation.
 
-Before navigating, you should call `window.scrollTo(0, window.history.state.scrollY ?? 0)` to restore the previous scroll position.
+Before navigating, you should call  
+`window.scrollTo(0, window.history.state.scrollY ?? 0)`  
+to restore the previous scroll position, or scroll to the top.
 
 Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
 

@@ -11,6 +11,7 @@ import { usePopState } from "../hooks/manual/usePopState";
 import { useHandleLinkClick } from "../hooks/manual/useHandleLinkClick";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
 
+
 interface ProviderProps{
     scroll: 'auto'|'top'
     children: ReactNode
@@ -29,6 +30,11 @@ export function ManualTransitionProvider({
     
     const useUse = useRef(false)
     const resolveUseFn = useRef<(()=>void)|null>(null)
+
+    const mount=useRef({
+        mounted: false,
+        initPathname: pathname
+    })
     
     usePopState({
         resolveFn, 
@@ -49,9 +55,15 @@ export function ManualTransitionProvider({
     useScrollRestoration({ scroll })
 
     useEffect(()=>{
-        if(basePath.current === null){
+        if(mount.current.mounted === false && 
+            mount.current.initPathname === pathname
+        ){
+            currentPathname.current = window.location.pathname
             basePath.current = window.location.pathname.slice(0, -pathname.length)
+            
+            return
         }
+        mount.current.mounted = true
         
         state.current = 'entering'
         currentPathname.current = window.location.pathname

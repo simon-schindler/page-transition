@@ -32,12 +32,14 @@ type ProviderProps = BaseProps & ModeProps
 
 export function TransitionProvider(props: ProviderProps){
     const { scroll = 'auto', children } = props
+    
     return(
         props.mode === 'manual' ?
         <ManualTransitionProvider
         scroll={scroll}
         children={children}
-        />:
+        />
+        :
         <CssTransitionProvider
         scroll={scroll}
         outside={props.outside}

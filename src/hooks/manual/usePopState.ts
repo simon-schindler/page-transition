@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, useRef, use } from "react";
 
 import type { RefObject } from "react";
 
@@ -19,27 +19,36 @@ export function usePopState({
     useUse,
     resolveUseFn
 }: Props){
-    const [promise, setPromise]=useState<Promise<void>|null>(null)
-    if(promise){
+    const [_, rerender]=useState<number>(0)
+    const promise =useRef<null| Promise<void>>(null)
+    
+    if(promise.current){
         useUse.current = true
-        use(promise)
+        use(promise.current)
     }else{
         useUse.current = false
     }
+
     useEffect(()=>{
         const handlePopstate=()=>{
-            setPromise(
-                new Promise<void>((resolve, reject)=>{
-                    resolveFn.current = resolve
-                    resolveUseFn.current = reject
-                    state.current = 'exiting'
-                }).then(()=>{
-                    setPromise(null)
-                    if(window.location.pathname === currentPathname.current){
-                        state.current = 'entering'
-                    }
-                }).catch(()=>setPromise(null))
-            )
+
+            promise.current = new Promise<void>((resolve, reject)=>{
+
+                resolveFn.current = resolve
+                resolveUseFn.current = reject
+                state.current = 'exiting'
+            }).then(()=>{
+
+                promise.current = null
+                if(window.location.pathname === currentPathname.current){
+                    state.current = 'entering'
+                }
+            }).catch(()=>{
+                promise.current = null
+            })
+
+            rerender((prev)=>++prev) 
+            
         }
         window.addEventListener('popstate', handlePopstate)
 
