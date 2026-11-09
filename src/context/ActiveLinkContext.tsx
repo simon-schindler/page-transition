@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef, } from "react";
 
 import type { ReactNode } from "react";
 interface Props{
@@ -20,17 +20,22 @@ export function dispatchNextPathname(href:string){
 }
 
 export function ActiveLinkProvider({children}:{children: ReactNode}){
-    
     const map = useRef(new Map<HTMLElement, string>())
     
-    function saveRef ( href: string ){
+    function saveRef (href: string){
         let element: HTMLElement
+          
         return (ref:HTMLElement|null)=>{
             if(ref){
                 element = ref
                 map.current.set(ref, href)
+                for(const [el, href] of map.current){
+                    el.classList.toggle('active', href === pathname)
+                }
+                
             }
             if(!ref)map.current.delete(element)
+                
         }
     }
 
@@ -39,10 +44,6 @@ export function ActiveLinkProvider({children}:{children: ReactNode}){
             for(const [el, href] of map.current){
                 el.classList.toggle('active', href === e.detail)
             }
-        }
-
-        for(const [el, href] of map.current){
-            el.classList.toggle('active', href === pathname)
         }
 
         window.addEventListener('nextPathname', handleActiveLink)
