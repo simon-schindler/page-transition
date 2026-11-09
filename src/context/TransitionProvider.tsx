@@ -6,6 +6,8 @@ import { ManualTransitionProvider } from "./ManualTransitionProvider";
 import type { ReactNode } from "react";
 import type { TransitionProperty } from "../types/transitionPropertys.types";
 
+import { ActiveLinkProvider } from "./ActiveLinkContext";
+
 interface TransitionOptions{
     transitionProperty: TransitionProperty
     overlays?: number
@@ -34,18 +36,22 @@ export function TransitionProvider(props: ProviderProps){
     const { scroll = 'auto', children } = props
     
     return(
-        props.mode === 'manual' ?
-        <ManualTransitionProvider
-        scroll={scroll}
-        children={children}
-        />
-        :
-        <CssTransitionProvider
-        scroll={scroll}
-        outside={props.outside}
-        options={props.options}
-        children={children}
-        />
+        <ActiveLinkProvider>
+            {
+                props.mode === 'manual' ?
+                <ManualTransitionProvider
+                scroll={scroll}
+                children={children}
+                />
+                :
+                <CssTransitionProvider
+                scroll={scroll}
+                outside={props.outside}
+                options={props.options}
+                children={children}
+                />
+            }
+        </ActiveLinkProvider>
     )
 
 }

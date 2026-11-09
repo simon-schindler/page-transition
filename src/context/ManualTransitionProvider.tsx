@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 import { usePopState } from "../hooks/manual/usePopState";
 import { useHandleLinkClick } from "../hooks/manual/useHandleLinkClick";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
-
+import { dispatchNextPathname } from "./ActiveLinkContext"
 
 interface ProviderProps{
     scroll: 'auto'|'top'
@@ -40,6 +40,7 @@ export function ManualTransitionProvider({
         resolveFn, 
         state,
         currentPathname,
+        basePath,
         useUse,
         resolveUseFn
     })
@@ -58,6 +59,7 @@ export function ManualTransitionProvider({
         if(mount.current.mounted === false && 
             mount.current.initPathname === pathname
         ){
+            dispatchNextPathname(pathname)
             currentPathname.current = window.location.pathname
             basePath.current = window.location.pathname.slice(0, -pathname.length)
             

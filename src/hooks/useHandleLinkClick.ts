@@ -11,6 +11,7 @@ import { useTransitionEndObj } from "../hooks/useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
 
 import { pollTransitionStart } from "../functions/pollTransitionStart"
+import { dispatchNextPathname } from "../context/ActiveLinkContext"
 
 import type { TransitionEndData, TransitionEndHandler } from "../types/transitionEnd.types"
 
@@ -18,24 +19,24 @@ interface Props{
     container: RefObject<HTMLDivElement | null>
     handleLinkClick: RefObject<((e: React.MouseEvent,url:string)=>void)>
     currentPathname: RefObject<string>
+    basePath: RefObject<string|null>
     transitionEndData: RefObject<TransitionEndData>
     transitionEndHandler:RefObject<TransitionEndHandler>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
-    basePath: RefObject<string|null>
     pollRafId: RefObject<number|null>
 }
 export function useHandleLinkClick({
     container,
     handleLinkClick,
     currentPathname,
+    basePath,
     transitionEndData,
     transitionEndHandler,
     state, 
     useUse,
-    resolveUseFn,
-    basePath,
+    resolveUseFn,    
     pollRafId
 }:Props){
     
@@ -111,6 +112,7 @@ export function useHandleLinkClick({
     handleLinkClick.current = useCallback((e: React.MouseEvent, url:string)=>{
         e.preventDefault()
         
+        dispatchNextPathname(url)
         nextPage.current = url
         const basePathUrl = basePath.current? basePath.current + url : url
         

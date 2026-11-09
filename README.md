@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v0.1.2-000000) ![83.1 KB](https://img.shields.io/badge/83.1_KB-1677FF)  
+![Version](https://img.shields.io/badge/v0.2.0-000000) ![86.1 KB](https://img.shields.io/badge/86.1_KB-1677FF)  
   
   `npm install page-transition`  
   
@@ -411,5 +411,22 @@ Once `state.current` is set to `entering`, the navigation has occurred. After th
 import { useTransitionContext } from "page-transition/manual"
 
 const { resolveFn, state } = useTransitionContext()
+
+```
+
+## Helpers
+
+**useActiveLink**  
+Automatically adds the active class to the element when its href matches.
+
+```tsx
+import { useActiveLink } from "page-transition"
+const { saveRef } = useActiveLink()
+
+<li ref={saveRef(href)}>
+    <TransitionLink href={href}>
+        {linkName}
+    </TransitionLink>
+</li>
 
 ```

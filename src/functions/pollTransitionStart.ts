@@ -1,4 +1,5 @@
-import { checkTransitionStart } from "./checkTransitionStart";
+
+import { transitionRunning } from "./transitionRunning";
 import type { RefObject } from "react";
 
 import type { TransitionEndData } from "../types/transitionEnd.types";
@@ -15,7 +16,12 @@ export function pollTransitionStart({
 }:Props){
     if(id.current !== null)cancelAnimationFrame(id.current)
     id.current = requestAnimationFrame(()=>{
-        if(checkTransitionStart(transitionEndData.current, fn)){
+        if(transitionRunning(
+            transitionEndData.current.elArray,
+            transitionEndData.current.transitionProperty,
+            transitionEndData.current.group
+        )){
+            fn()
             return
         }
         pollTransitionStart({id,fn,transitionEndData})

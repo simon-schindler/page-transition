@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef, use } from "react";
+import { dispatchNextPathname } from "../../context/ActiveLinkContext";
 
 import type { RefObject } from "react";
 
@@ -8,6 +9,7 @@ interface Props{
     resolveFn: RefObject<(()=>void)|null>
     state: RefObject<'idle'|'exiting'|'entering'>
     currentPathname: RefObject<string>
+    basePath: RefObject<string|null>
     useUse: RefObject<boolean>
     resolveUseFn: RefObject<(()=>void)|null>
 }
@@ -16,6 +18,7 @@ export function usePopState({
     resolveFn,
     state,
     currentPathname,
+    basePath,
     useUse,
     resolveUseFn
 }: Props){
@@ -31,7 +34,10 @@ export function usePopState({
 
     useEffect(()=>{
         const handlePopstate=()=>{
-
+            
+            const nextPathname = window.location.pathname.slice(basePath.current?.length??0)
+            dispatchNextPathname(nextPathname)
+            
             promise.current = new Promise<void>((resolve, reject)=>{
 
                 resolveFn.current = resolve

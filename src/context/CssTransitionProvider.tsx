@@ -18,6 +18,8 @@ import { usePopState } from "../hooks/usePopState";
 
 import { pollTransitionStart } from "../functions/pollTransitionStart"; 
 
+import { dispatchNextPathname } from "./ActiveLinkContext"
+
 import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 interface TransitionOptions{
@@ -30,13 +32,13 @@ interface DefaultOptions{
     overlays: number
     items: [number, number]
 }
+
 interface ProviderProps{
     outside?: ReactNode
     scroll: 'auto'|'top'
     options: TransitionOptions
     children: ReactNode
 }
-
 export function CssTransitionProvider({ 
     outside,
     scroll,
@@ -73,8 +75,7 @@ export function CssTransitionProvider({
     
     const useUse = useRef(false)
     const resolveUseFn = useRef<(()=>void)|null>(null)
-    
-    
+
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
     const transitionEndHandler = useTransitionEndHandler()
@@ -96,6 +97,7 @@ export function CssTransitionProvider({
     usePopState({
         container,
         currentPathname,
+        basePath,
         transitionEndData,
         transitionEndHandler,
         state,
@@ -107,12 +109,12 @@ export function CssTransitionProvider({
         container,
         handleLinkClick,
         currentPathname,
+        basePath,
         transitionEndData,
         transitionEndHandler,
         state,
         useUse,
         resolveUseFn,
-        basePath,
         pollRafId
     })
     useScrollRestoration({scroll})
@@ -129,9 +131,9 @@ export function CssTransitionProvider({
         if(mount.current.mounted === false && 
             mount.current.initPathname === pathname
         ){
+            dispatchNextPathname(pathname)
             currentPathname.current = window.location.pathname
             basePath.current = window.location.pathname.slice(0, -pathname.length)
-            
             return
         }
         mount.current.mounted = true

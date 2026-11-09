@@ -2,18 +2,20 @@
 
 import { useEffect, useRef, useState, use } from "react"
 
-import type { Dispatch, RefObject, SetStateAction } from "react"
+import type { RefObject } from "react"
 
 import { useTransitionEndObj } from "./useTransitionEndObj"
 import { transitionEnd } from "../functions/transitionEnd"
 
 import { pollTransitionStart } from "../functions/pollTransitionStart"
+import { dispatchNextPathname } from "../context/ActiveLinkContext"
 
 import type { TransitionEndData, TransitionEndHandler } from "../types/transitionEnd.types"
 
 interface Props{
     container: RefObject<HTMLDivElement|null>
     currentPathname: RefObject<string>
+    basePath: RefObject<string|null>
     transitionEndData: RefObject<TransitionEndData>
     transitionEndHandler: RefObject<TransitionEndHandler>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
@@ -24,6 +26,7 @@ interface Props{
 export function usePopState({
     container,
     currentPathname,
+    basePath,
     transitionEndData,
     transitionEndHandler,
     state,
@@ -91,7 +94,6 @@ export function usePopState({
             useUse.current = false
         }
     })
-
     const afterEntering = useTransitionEndObj({
         transitionEndData,
         fn: ()=>{
@@ -110,6 +112,8 @@ export function usePopState({
    
     useEffect(()=>{
         const handlePopstate=()=>{
+            const nextPathname = window.location.pathname.slice(basePath.current?.length??0)
+            dispatchNextPathname(nextPathname)
             
             promise.current = new Promise<void>((resolve, reject)=>{
 
