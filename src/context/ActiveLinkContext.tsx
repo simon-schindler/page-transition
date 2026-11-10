@@ -29,10 +29,8 @@ export function ActiveLinkProvider({children}:{children: ReactNode}){
             if(ref){
                 element = ref
                 map.current.set(ref, href)
-                for(const [el, href] of map.current){
-                    el.classList.toggle('active', href === pathname)
-                }
                 
+                ref.classList.toggle('active', href === pathname) 
             }
             if(!ref)map.current.delete(element)
                 
