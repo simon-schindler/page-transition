@@ -40,10 +40,14 @@ export function ActiveLinkProvider({children}:{children: ReactNode}){
     }
 
     useEffect(()=>{
+
         const handleActiveLink=(e: CustomEvent)=>{
             for(const [el, href] of map.current){
                 el.classList.toggle('active', href === e.detail)
             }
+        }
+        for(const [el, href] of map.current){
+                el.classList.toggle('active', href === pathname)
         }
 
         window.addEventListener('nextPathname', handleActiveLink)
