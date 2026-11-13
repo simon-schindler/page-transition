@@ -1,14 +1,13 @@
 {
     "name": "page-transition",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "A page transition library for the Next.js App Router.",
     "keywords": [
         "next.js",
         "nextjs",
         "app router",
         "page-transition",
-        "page transitions",
-        "next page transitions"
+        "page transitions"
     ],
     "license": "MIT",
     "files": [

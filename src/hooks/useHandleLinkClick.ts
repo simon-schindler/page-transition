@@ -122,10 +122,8 @@ export function useHandleLinkClick({
                 if(basePathUrl === currentPathname.current){ 
                     return 
                 }else if(basePathUrl !== currentPathname.current){
-                    
                     if(!nextPage.current)return
 
-                    state.current = 'navigating'
                     router.push(nextPage.current)
                     nextPage.current = null
                         

@@ -125,7 +125,6 @@ export function usePopState({
                     if(state.current === "navigating"){
                             
                         if(currentPathname.current !== window.location.pathname){
-                            state.current = 'navigating'
                             resolveFn.current?.()
                                 
                             promise.current=null
