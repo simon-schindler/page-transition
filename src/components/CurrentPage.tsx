@@ -32,7 +32,7 @@ export function CurrentPage({children, newSnapshot, visiblity, currentPage}:Prop
                 {children}
             </div>
             <div 
-            className="prevPage"
+            className="page-wrapper"
             ref={snapshot}
             style={{position: 'absolute', inset:0, visibility: visiblity? 'visible':'hidden'}}
             />

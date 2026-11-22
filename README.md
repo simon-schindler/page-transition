@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v0.3.0-000000) ![85.9 KB](https://img.shields.io/badge/85.9_KB-1677FF)  
+![Version](https://img.shields.io/badge/v0.4.0-000000) ![82.8 KB](https://img.shields.io/badge/82.8_KB-1677FF)  
   
   `npm install page-transition`  
   
@@ -50,7 +50,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
 | Option | Type | Default | Required |
 |---|---|---|---|
-| transitionProperty | "opacity" \| "clip-path" \| "transform" | - | Yes |
 | overlays | number | 0 | - |
 | items | [number, number] | [0, 0] | - |
 
@@ -68,10 +67,6 @@ Controls browser scroll restoration during back and forward navigation.
 **outside**  
 Components rendered outside .page-wrapper, but still inside the transition container.
 
-**options.transitionProperty**  
-Defines which property transitionend waits for.  
-
-
 **options.overlays**  
 Number of overlay elements to add to the transition container.  
 Each element receives the `.overlay` class.
@@ -87,8 +82,7 @@ Number of items in the second group. Each item receives the `.second-item` class
 <TransitionProvider
 outside={<Header/>}
 options={{
-    overlays: 2,
-    transitionProperty: "clip-path",
+    overlays: 1
 }}
 >
   {children}
@@ -102,7 +96,6 @@ options={{
 |---|---|---|---|
 | href | string | - | Yes |
 | className | string | - | - |
-| scroll | boolean | true | - |
 | prefetch | boolean \| "auto" \| null | null | - |
 | onClick | (e: React.MouseEvent)=>void | - | - |
 
@@ -132,19 +125,19 @@ import {TransitionLink} from "page-transition/manual"
 
 ### CSS Mode
 
-The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the `exit` class and waits for the transitionend event of the configured `transition property`.
+The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the `exit` class and waits for the animationend event.
 
-By default, the event is tracked on `.page-wrapper`, which contains the page's children.
+By default, the event listener is attached to `.page-wrapper`, which contains the page's children and is a clone.
 
-If `options.overlays` is greater than 0, the transition event is tracked on the last element of the overlay group.
+If `options.overlays` is greater than 0, the animation event is tracked on the last element of the overlay group.
 
-If `options.items` specifies one or more items, the transition event is tracked on the last item of the first group.
+If `options.items` specifies one or more items, the animation event is tracked on the last item of the first group.
 
-The `.item-wrapper` is provided to group and position transition items. It is primarily intended for transitions that require multiple grouped elements. The number of items in each group can be configured using the options.items array.
+The `.item-wrapper` is provided to group and position animation items. It is primarily intended for transitions that require multiple grouped elements. The number of items in each group can be configured using the options.items array.
 
-Once the transition ends, the scroll position is restored and navigation is performed.
+Once the animation ends, the scroll position is restored and a new clone of .page-wrapper is created.
 
-After navigation, the `exit` class is removed and the `enter` class is added. Once the next transitionend event fires, the enter class is removed.
+After navigation, the exit class is removed and the enter class is added. Once the next animationend event fires, the enter class is removed and the clone is no longer visible.
 
 ```tsx 
 <div data-transition>
@@ -156,10 +149,13 @@ After navigation, the `exit` class is removed and the `enter` class is added. On
     </div>
 
     {outside}
+    {children}
 
-    <div className={"page-wrapper"}>
-        {children}
-    </div>
+    <CurrentPage  
+        // Clone the page-wrapper      
+        children={children}
+    />
+
 </div>
 ```
 
@@ -200,14 +196,27 @@ overlays: 1
     will-change: opacity;
     pointer-events: none;
 }
-[data-transition].exit .overlay{
-   opacity: 1;  
-   transition: opacity 0.4s ease;
-   
+@keyframes exit{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+[data-transition].exit .overlay{  
+   animation: exit 0.4s ease forwards;
+}
+@keyframes enter{
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
 }
 [data-transition].enter .overlay{
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    animation: enter 0.5s ease forwards;
 }
 ```
 </details>
@@ -218,9 +227,7 @@ overlays: 1
 options
 
 ```ts
-transitionProperty: "clip-path"  
 overlays: 2
-
 ```
   
 ```css
@@ -233,14 +240,28 @@ overlays: 2
     opacity: 0;
     pointer-events: none;
 }
-[data-transition].exit .overlay:nth-child(1){
-   opacity: 1;  
-   transition: opacity 0.4s ease;
-   
+@keyframes exit{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+[data-transition].exit .overlay:nth-child(1){  
+   animation: exit 0.4s ease forwards;
+}
+@keyframes enter{
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
 }
 [data-transition].enter .overlay:nth-child(1){
     opacity: 0;
-    transition: opacity 0.5s ease;
+    animation: opacity 0.5s ease forwards;
 }
 
 [data-transition] .overlay:nth-child(2){
@@ -254,13 +275,28 @@ overlays: 2
     will-change: clip-path;
     pointer-events: none;
 }
+@keyframes overlayExit{
+    0%{
+        clip-path: inset(100% 0 0 0);
+    }
+    100%{
+        clip-path: inset(0 0 0 0);
+    }
+}
 [data-transition].exit .overlay:nth-child(2){
-    clip-path: inset(0 0 0 0);
-    transition: clip-path 1.2s ease;
+    
+    animation: overlayExit 1.2s ease forwards;
+}
+@keyframes overlayEnter{
+    0%{
+        clip-path: inset(0 0 0 0);
+    }
+    100%{
+        clip-path: inset(0 0 100% 0);
+    }
 }
 [data-transition].enter .overlay:nth-child(2){
-    clip-path: inset(0 0 100% 0);
-    transition: clip-path 1.2s ease;
+    animation: overlayEnter 1.2s ease forwards;
 }
 ```
 </details>
@@ -271,7 +307,6 @@ overlays: 2
 options
   
 ```ts
-transitionProperty: "clip-path"  
 items: [10, 0]
 ```
 
@@ -286,25 +321,38 @@ items: [10, 0]
 }
 [data-transition] .first-item{
     background: black;
-    transition: none;
     will-change: clip-path;
     clip-path: inset(100% -1px 0 -1px);
 }
+@keyframes firstExit{
+    0%{
+        clip-path: inset(100% -1px 0 -1px);
+    }
+    100%{
+        clip-path: inset(0 -1px 0 -1px);
+    }
+}
 [data-transition].exit .first-item{
-    clip-path: inset(0 -1px 0 -1px);
-    transition: clip-path 1.0s ease;
+    animation: firstExit 1.0s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
-            transition-delay: $i * 0.2s;
+            animation-delay: $i * 0.2s;
         }
     }
 }
+@keyframes firstEnter{
+    0%{
+        clip-path: inset(0 -1px 0 -1px);
+    }
+    100%{
+        clip-path: inset(0 -1px 100% -1px);
+    }
+}
 [data-transition].enter .first-item{
-    clip-path: inset(0 -1px 100% -1px);
-    transition: clip-path 1.0s ease;
+    animation: firstEnter 1.0s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
-            transition-delay: $i * 0.2s;
+            animation-delay: $i * 0.2s;
         }
     }
 }
@@ -317,7 +365,6 @@ items: [10, 0]
 options
 
 ```ts
-transitionProperty: "clip-path"  
 items: [10, 10]
 ```
 
@@ -335,56 +382,86 @@ items: [10, 10]
     grid-row: 1;
     background: black;
   
-    transition: none;
     will-change: clip-path;
     clip-path: inset(0 -1px 100% -1px);
 }
+@keyframes firstExit{
+    0%{
+        clip-path: inset(0 -1px 100% -1px);
+    }
+    100%{
+        clip-path: inset(0 -1px 0 -1px);
+    }
+}
 [data-transition].exit .first-item{
     grid-row: 1;
-    clip-path: inset(0 -1px 0 -1px);
-    transition: clip-path 1.2s ease;
+    
+    animation: firstExit 1.2s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
-            transition-delay: $i * 0.3s;
+            animation-delay: $i * 0.3s;
         }
+    }
+}
+@keyframes firstEnter{
+    0%{
+        clip-path: inset(0 -1px 0 -1px);
+    }
+    100%{
+        clip-path: inset(0 -1px 100% -1px);
     }
 }
 [data-transition].enter .first-item{
     grid-row: 1;
     clip-path: inset(0 -1px 100% -1px);
-    transition: clip-path 1.2s ease;
+    animation: firstEnter 1.2s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
-            transition-delay: $i * 0.3s;
+            animation-delay: $i * 0.3s;
         }
     }
 }
 // .second-item
+
 [data-transition] .second-item{
     grid-row: 2;
     background: black;
     
-    transition: none;
     will-change: clip-path;
-    clip-path: inset(100% 0 0 0);
+    clip-path: inset(100% -1px 0 -1px);
+}
+@keyframes secondExit{
+    0%{
+        clip-path: inset(100% -1px 0 -1px);
+    }
+    100%{
+        clip-path: inset(0 -1px 0 -1px);
+    }
 }
 [data-transition].exit .second-item{
     grid-row: 2;
-    clip-path: inset(0 -1px 0 -1px);
-    transition: clip-path 1.2s ease;
+    animation: secondExit 1.2s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+11}){
-            transition-delay: $i * 0.3s;
+            animation-delay: $i * 0.3s;
         }
+    }
+}
+@keyframes secondEnter{
+    0%{
+        clip-path: inset(0 -1px 0 -1px);
+    }
+    100%{
+        clip-path: inset(100% -1px 0 -1px);
     }
 }
 [data-transition].enter .second-item{
     grid-row: 2;
-    clip-path: inset(100% -1px 0 -1px);
-    transition: clip-path 1.2s ease;
+    
+    animation: secondEnter 1.2s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+11}){
-            transition-delay: $i * 0.3s;
+            animation-delay: $i * 0.3s;
         }
     }
 }
@@ -398,14 +475,11 @@ items: [10, 10]
 In manual mode, you can control the transition using `useTransitionContext`.
 
 
-After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to proceed with the navigation.
+After triggering the navigation, `state.current` is set to `exiting`. You can then call `resolveFn.current()` to hide the clone.
 
-Before navigating, you should call  
-`window.scrollTo(0, window.history.state.scrollY ?? 0)`  
-to restore the previous scroll position, or scroll to the top.
+After calling resolveFn.current(), the scroll position is restored and state.current is set to `entering`.
 
-Once `state.current` is set to `entering`, the navigation has occurred. After the animation finishes, `state.current` should be set to `idle`.
-
+Once the animation finishes, `state.current` should be set to `idle`.
 
 ```ts
 import { useTransitionContext } from "page-transition/manual"

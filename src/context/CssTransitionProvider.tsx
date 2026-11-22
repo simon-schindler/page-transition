@@ -10,13 +10,11 @@ import type { ReactNode } from "react";
 import { useAnimationEndHandler } from "../hooks/useAnimationEndHandler";
 import { useAnimationEndData } from "../hooks/useAnimationEndData";
 
-
 import { useHandleLinkClick } from "../hooks/useHandleLinkClick";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
 import { usePopState } from "../hooks/usePopState";
 
 import { dispatchNextPathname } from "./ActiveLinkContext"
-
 
 import { CurrentPage } from "../components/CurrentPage";
 
@@ -49,7 +47,6 @@ export function CssTransitionProvider({
     }
 
     const container = useRef<HTMLDivElement|null>(null)
-    const pageWrapper = useRef<HTMLDivElement|null>(null)
     
     const overlays = useRef<(HTMLDivElement|null)[]>([])
     const itemWrapper = useRef<HTMLDivElement|null>(null)
@@ -124,7 +121,7 @@ export function CssTransitionProvider({
       
     const value=useMemo(()=>({
         handleLinkClick, 
-        pageWrapper,
+        pageWrapper:currentPage,
         overlays, 
         itemWrapper, 
         firstItems, 
@@ -177,13 +174,8 @@ export function CssTransitionProvider({
                         }
                     </div>
                 }
-                {outside}
-                <div 
-                ref={pageWrapper}
-                className={"page-wrapper"}
-                >          
+                {outside}   
                 {children} 
-                </div>
                 <CurrentPage 
                 newSnapshot={newSnapshot}
                 visiblity={visible}

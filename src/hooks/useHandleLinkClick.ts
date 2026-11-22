@@ -83,7 +83,6 @@ export function useHandleLinkClick({
             })  
 
             container.current?.classList.remove('enter')
-            void container.current?.offsetWidth
             container.current?.classList.add('exit')
 
             state.current='exiting'

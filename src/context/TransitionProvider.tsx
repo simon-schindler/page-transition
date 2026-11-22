@@ -4,13 +4,11 @@ import { CssTransitionProvider } from "./CssTransitionProvider";
 import { ManualTransitionProvider } from "./ManualTransitionProvider";
 
 import type { ReactNode } from "react";
-import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 import { ActiveLinkProvider } from "./ActiveLinkContext";
 import { ExitFinishProvider } from "./ExitFinishContext";
 
 interface TransitionOptions{
-    transitionProperty: TransitionProperty
     overlays?: number
     items?: [number, number]
 }
