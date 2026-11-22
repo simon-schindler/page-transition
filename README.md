@@ -125,7 +125,7 @@ import {TransitionLink} from "page-transition/manual"
 
 ### CSS Mode
 
-The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the `exit` class and waits for the animationend event.
+The `TransitionProvider` uses a container with a `data-transition` attribute. When navigation starts, it adds the `exit` class and waits for the <mark>animationend event</mark>.
 
 By default, the event listener is attached to `.page-wrapper`, which contains the page's children and is a clone.
 
