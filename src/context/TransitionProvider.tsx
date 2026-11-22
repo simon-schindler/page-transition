@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import type { TransitionProperty } from "../types/transitionPropertys.types";
 
 import { ActiveLinkProvider } from "./ActiveLinkContext";
+import { ExitFinishProvider } from "./ExitFinishContext";
 
 interface TransitionOptions{
     transitionProperty: TransitionProperty
@@ -26,7 +27,7 @@ type ModeProps =
     }
     |{
         mode: 'manual'
-        outside?: never
+        outside?: ReactNode
         options?: never
     }
 
@@ -37,20 +38,24 @@ export function TransitionProvider(props: ProviderProps){
     
     return(
         <ActiveLinkProvider>
-            {
-                props.mode === 'manual' ?
-                <ManualTransitionProvider
-                scroll={scroll}
-                children={children}
-                />
-                :
-                <CssTransitionProvider
-                scroll={scroll}
-                outside={props.outside}
-                options={props.options}
-                children={children}
-                />
-            }
+            <ExitFinishProvider>
+                {
+                    props.mode === 'manual' ?
+                    <ManualTransitionProvider
+                    scroll={scroll}
+                    outside={props.outside}
+                    children={children}
+                    />
+                    :
+                    <CssTransitionProvider
+                    scroll={scroll}
+                    outside={props.outside}
+                    options={props.options}
+                    children={children}
+                    />
+                    
+                }
+            </ExitFinishProvider>
         </ActiveLinkProvider>
     )
 

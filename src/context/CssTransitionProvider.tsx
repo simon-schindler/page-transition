@@ -2,25 +2,24 @@
 
 import { CssContext } from "./CssContext";
 
-import { useRef, useMemo, useEffect} from "react";
+import { useRef, useMemo, useEffect, useState} from "react";
 import { usePathname } from "next/navigation";
 
 import type { ReactNode } from "react";
 
 import { useTransitionEndHandler } from "../hooks/useTransitionEndHandler";
 import { useTransitionEndData } from "../hooks/useTransitionEndData";
-import { useTransitionEndObj } from "../hooks/useTransitionEndObj";
-import { transitionEnd } from "../functions/transitionEnd";
+
 
 import { useHandleLinkClick } from "../hooks/useHandleLinkClick";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
 import { usePopState } from "../hooks/usePopState";
 
-import { pollTransitionStart } from "../functions/pollTransitionStart"; 
-
 import { dispatchNextPathname } from "./ActiveLinkContext"
 
 import type { TransitionProperty } from "../types/transitionPropertys.types";
+
+import { PrevPage } from "../components/PrevPage";
 
 interface TransitionOptions{
     transitionProperty: TransitionProperty
@@ -63,7 +62,6 @@ export function CssTransitionProvider({
     const group=useRef<'overlay'|null>(null)
     
     const pathname = usePathname()
-    const currentPathname = useRef(pathname)
     
     const mount=useRef({
         mounted: false,
@@ -73,8 +71,9 @@ export function CssTransitionProvider({
     const state = useRef<'idle'|'exiting'|'navigating'|'entering'>('idle')
     const basePath = useRef<string|null>(null)
     
-    const useUse = useRef(false)
-    const resolveUseFn = useRef<(()=>void)|null>(null)
+    const [newSnapshot, setNewSnapshot]=useState(0)
+    const [visible, setVisible]=useState(false)
+    const prevPage = useRef<HTMLDivElement|null>(null)
 
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
@@ -96,67 +95,38 @@ export function CssTransitionProvider({
 
     usePopState({
         container,
-        currentPathname,
         basePath,
         transitionEndData,
         transitionEndHandler,
         state,
-        useUse,
-        resolveUseFn,
-        pollRafId
+        pollRafId,
+        setVisible,
+        setNewSnapshot
     })
     useHandleLinkClick({
         container,
         handleLinkClick,
-        currentPathname,
         basePath,
         transitionEndData,
         transitionEndHandler,
         state,
-        useUse,
-        resolveUseFn,
-        pollRafId
+        pollRafId,
+        setVisible,
+        setNewSnapshot
+        
     })
     useScrollRestoration({scroll})
 
-    const removeEnter=useTransitionEndObj({
-        transitionEndData,
-        fn:()=>{
-            container.current?.classList.remove('enter')
-            state.current = 'idle'
-        }
-    })
-    
     useEffect(()=>{
         if(mount.current.mounted === false && 
             mount.current.initPathname === pathname
         ){
             dispatchNextPathname(pathname)
-            currentPathname.current = window.location.pathname
+            
             basePath.current = window.location.pathname.slice(0, -pathname.length)
             return
         }
         mount.current.mounted = true
-        
-        if(!container.current)return
-        
-        transitionEnd({
-            transitionEndObj: removeEnter,
-            transitionEndHandler
-        })
-            
-        container.current.classList.remove('exit')
-        container.current.classList.add('enter')
-        
-        pollTransitionStart({
-            transitionEndData, 
-            id: pollRafId, 
-            fn: ()=>{
-                state.current = 'entering'
-            }
-        })
-        
-        currentPathname.current = window.location.pathname
         
     },[pathname])
       
@@ -222,6 +192,12 @@ export function CssTransitionProvider({
                 >          
                 {children} 
                 </div>
+                <PrevPage 
+                newSnapshot={newSnapshot}
+                visiblity={visible}
+                prevPage={prevPage}
+                children={children}
+                />
             </div>
         </CssContext.Provider>
     )

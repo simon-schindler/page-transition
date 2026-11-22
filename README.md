@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v0.2.5-000000) ![86.2 KB](https://img.shields.io/badge/86.2_KB-1677FF)  
+![Version](https://img.shields.io/badge/v0.3.0-000000) ![85.9 KB](https://img.shields.io/badge/85.9_KB-1677FF)  
   
   `npm install page-transition`  
   
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 |---|---|---|---|
 | mode | "css" \| "manual" | "css" | Both |
 | scroll | "auto" \| "top" | "auto" | Both |
-| outside | JSX | - | CSS |
+| outside | JSX | - | Both |
 | options | *Options* | {} | CSS |
 
 *Options*
@@ -421,6 +421,7 @@ Automatically adds the active class to the element when its href matches.
 
 ```tsx
 import { useActiveLink } from "page-transition"
+
 const { saveRef } = useActiveLink()
 
 <li ref={saveRef(href)}>
@@ -428,5 +429,20 @@ const { saveRef } = useActiveLink()
         {linkName}
     </TransitionLink>
 </li>
+
+```
+
+**useExitFinsh**  
+Returns true after the exit transition or when resolveFn is called.
+
+```tsx
+import { useExitFinish } from "page-transition"
+
+const {exitFinish} = useExitFinish()
+    
+useEffect(()=>{
+         
+},[exitFinish])
+
 
 ```

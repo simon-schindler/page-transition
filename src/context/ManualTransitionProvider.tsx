@@ -2,7 +2,7 @@
 
 import { ManualContext } from "./ManualContext";
 
-import { useEffect, useRef, useMemo } from "react"
+import { useEffect, useRef, useMemo, useState } from "react"
 import { usePathname } from "next/navigation";
 
 import type { ReactNode } from "react";
@@ -12,12 +12,16 @@ import { useHandleLinkClick } from "../hooks/manual/useHandleLinkClick";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
 import { dispatchNextPathname } from "./ActiveLinkContext"
 
+import { PrevPage } from "../components/PrevPage";
+
 interface ProviderProps{
     scroll: 'auto'|'top'
+    outside: ReactNode | null
     children: ReactNode
 }
 export function ManualTransitionProvider({
     scroll,
+    outside,
     children
 }:ProviderProps){
     
@@ -25,11 +29,15 @@ export function ManualTransitionProvider({
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
     const resolveFn = useRef<(()=>void)|null>(null)
     const state = useRef<'idle'|'exiting'|'entering'>('idle')
-    const currentPathname = useRef(pathname)
+    
     const basePath = useRef<string|null>(null)
     
-    const useUse = useRef(false)
-    const resolveUseFn = useRef<(()=>void)|null>(null)
+    const [newSnapshot, setNewSnapshot]=useState(0)
+    const [visible, setVisible]=useState(false)
+    const prevPage = useRef<HTMLDivElement|null>(null)
+
+    const rejectFn = useRef<(()=>void)|null>(null)
+    
 
     const mount=useRef({
         mounted: false,
@@ -38,20 +46,20 @@ export function ManualTransitionProvider({
     
     usePopState({
         resolveFn, 
+        rejectFn,
         state,
-        currentPathname,
         basePath,
-        useUse,
-        resolveUseFn
+        setVisible,
+        setNewSnapshot
     })
     useHandleLinkClick({
         handleLinkClick,
         resolveFn,
+        rejectFn,
         state,
-        currentPathname,
         basePath,
-        useUse,
-        resolveUseFn
+        setVisible,
+        setNewSnapshot
     })
     useScrollRestoration({ scroll })
 
@@ -60,22 +68,27 @@ export function ManualTransitionProvider({
             mount.current.initPathname === pathname
         ){
             dispatchNextPathname(pathname)
-            currentPathname.current = window.location.pathname
+            
             basePath.current = window.location.pathname.slice(0, -pathname.length)
             
             return
         }
         mount.current.mounted = true
         
-        state.current = 'entering'
-        currentPathname.current = window.location.pathname
     },[pathname])
 
     const value = useMemo(()=>({handleLinkClick, resolveFn, state}),[])
     
     return(
         <ManualContext.Provider value={value}>
+            {outside}
             {children}
+            <PrevPage 
+            newSnapshot={newSnapshot}
+            visiblity={visible}
+            prevPage={prevPage}
+            children={children}
+            />
         </ManualContext.Provider>
     )
 }

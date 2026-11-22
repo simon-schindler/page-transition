@@ -1,60 +1,59 @@
 "use client"
 
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useRef } from "react";
 import { dispatchNextPathname } from "../../context/ActiveLinkContext";
-
-import type { RefObject } from "react";
+import { useExitFinishContext } from "../../context/ExitFinishContext"
+import type { RefObject, Dispatch, SetStateAction } from "react";
 
 interface Props{
     resolveFn: RefObject<(()=>void)|null>
+    rejectFn: RefObject<(()=>void) |null>
     state: RefObject<'idle'|'exiting'|'entering'>
-    currentPathname: RefObject<string>
     basePath: RefObject<string|null>
-    useUse: RefObject<boolean>
-    resolveUseFn: RefObject<(()=>void)|null>
+    setVisible: Dispatch<SetStateAction<boolean>>
+    setNewSnapshot: Dispatch<SetStateAction<number>> 
 }
 
 export function usePopState({
     resolveFn,
+    rejectFn,
     state,
-    currentPathname,
     basePath,
-    useUse,
-    resolveUseFn
+    setVisible,
+    setNewSnapshot
 }: Props){
-    const [_, rerender]=useState<number>(0)
-    const promise =useRef<null| Promise<void>>(null)
     
-    if(promise.current){
-        useUse.current = true
-        use(promise.current)
-    }else{
-        useUse.current = false
-    }
-
+    const promise =useRef<null| Promise<void>>(null)
+    const { setExitFinish } = useExitFinishContext()
+    
     useEffect(()=>{
         const handlePopstate=()=>{
             
+            rejectFn.current?.()
+
             const nextPathname = window.location.pathname.slice(basePath.current?.length??0)
             dispatchNextPathname(nextPathname)
+            setExitFinish(false)
+            setVisible(true)
             
             promise.current = new Promise<void>((resolve, reject)=>{
-
+                rejectFn.current = reject
                 resolveFn.current = resolve
-                resolveUseFn.current = reject
+                
                 state.current = 'exiting'
             }).then(()=>{
-
+                setExitFinish(true)
+                setVisible(false)
+                setNewSnapshot(prev=>++prev)
                 promise.current = null
-                if(window.location.pathname === currentPathname.current){
-                    state.current = 'entering'
-                }
+                window.scrollTo(0, window.history.state.scrollY ?? 0)
+
+                state.current = 'entering'
+                resolveFn.current = null
             }).catch(()=>{
                 promise.current = null
             })
-
-            rerender((prev)=>++prev) 
-            
+ 
         }
         window.addEventListener('popstate', handlePopstate)
 
