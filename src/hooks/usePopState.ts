@@ -5,41 +5,38 @@ import { flushSync } from "react-dom"
 
 import type { RefObject } from "react"
 
-import { useTransitionEndObj } from "./useTransitionEndObj"
-import { transitionEnd } from "../functions/transitionEnd"
+import { useAnimationEndObj } from "./useAnimationEndObj"
+import { animationEnd } from "../functions/animationEnd"
 
-import { pollTransitionStart } from "../functions/pollTransitionStart"
 import { dispatchNextPathname } from "../context/ActiveLinkContext"
 
 import { useExitFinishContext } from "../context/ExitFinishContext"
 
-import type { TransitionEndData, TransitionEndHandler } from "../types/transitionEnd.types"
+import type { AnimationEndData, AnimationEndHandler } from "../types/animationEnd.types"
 import type { Dispatch, SetStateAction } from "react"
 interface Props{
     container: RefObject<HTMLDivElement|null>
     basePath: RefObject<string|null>
-    transitionEndData: RefObject<TransitionEndData>
-    transitionEndHandler: RefObject<TransitionEndHandler>
+    animationEndData: RefObject<AnimationEndData>
+    animationEndHandler: RefObject<AnimationEndHandler>
     state: RefObject<'idle'|'exiting'|'entering'|'navigating'>
-    pollRafId: RefObject<number|null> 
     setVisible: Dispatch<SetStateAction<boolean>>
     setNewSnapshot: Dispatch<SetStateAction<number>>
 }
 export function usePopState({
     container,
     basePath,
-    transitionEndData,
-    transitionEndHandler,
+    animationEndData,
+    animationEndHandler,
     state,
-    pollRafId,
     setVisible,
     setNewSnapshot
 }:Props){
 
     const { setExitFinish }=useExitFinishContext()
 
-    const afterExit = useTransitionEndObj({
-        transitionEndData,
+    const afterExit = useAnimationEndObj({
+        animationEndData,
         fn: ()=>{
     
             container.current?.classList.remove('exit')
@@ -49,25 +46,20 @@ export function usePopState({
                 setExitFinish(true)
             })
             setNewSnapshot(prev=>++prev)
+            
             window.scrollTo(0, window.history.state.scrollY ?? 0)
                 
-            pollTransitionStart({
-                id: pollRafId,
-                transitionEndData,
-                fn:()=>{
-                    state.current='entering'
-                }
-            })
-                
-            transitionEnd({
-                transitionEndObj:removeEnter,
-                transitionEndHandler
+            state.current='entering'
+            
+            animationEnd({
+                animationEndObj:removeEnter,
+                animationEndHandler
             })
         } 
     })
         
-    const removeEnter = useTransitionEndObj({
-        transitionEndData,
+    const removeEnter = useAnimationEndObj({
+        animationEndData,
         fn: ()=>{
             container.current?.classList.remove('enter')
             state.current='idle'
@@ -75,12 +67,12 @@ export function usePopState({
         }
     })
         
-    const afterEntering = useTransitionEndObj({
-        transitionEndData,
+    const afterEntering = useAnimationEndObj({
+        animationEndData,
         fn: ()=>{
-            transitionEnd({
-                transitionEndObj: afterExit,
-                transitionEndHandler
+            animationEnd({
+                animationEndObj: afterExit,
+                animationEndHandler
              })  
     
             container.current?.classList.remove('enter')
@@ -100,14 +92,13 @@ export function usePopState({
                    
             if(state.current === 'idle'|| state.current === 'exiting'){
                                     
-                transitionEnd({
-                    transitionEndObj: afterExit, 
-                    transitionEndHandler  
+                animationEnd({
+                    animationEndObj: afterExit, 
+                    animationEndHandler  
                 })
 
                 setVisible(true)
-                state.current = 'navigating'
-                    
+                
                 container.current?.classList.remove('enter')
                 container.current?.classList.add('exit')
                                     
@@ -115,9 +106,9 @@ export function usePopState({
             }
             else{
 
-                transitionEnd({
-                    transitionEndObj: afterEntering,
-                    transitionEndHandler 
+                animationEnd({
+                    animationEndObj: afterEntering,
+                    animationEndHandler 
                 })
             }
         }

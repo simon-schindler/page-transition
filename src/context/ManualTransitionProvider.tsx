@@ -12,7 +12,7 @@ import { useHandleLinkClick } from "../hooks/manual/useHandleLinkClick";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
 import { dispatchNextPathname } from "./ActiveLinkContext"
 
-import { PrevPage } from "../components/PrevPage";
+import { CurrentPage } from "../components/CurrentPage";
 
 interface ProviderProps{
     scroll: 'auto'|'top'
@@ -34,7 +34,7 @@ export function ManualTransitionProvider({
     
     const [newSnapshot, setNewSnapshot]=useState(0)
     const [visible, setVisible]=useState(false)
-    const prevPage = useRef<HTMLDivElement|null>(null)
+    const currentPage = useRef<HTMLDivElement|null>(null)
 
     const rejectFn = useRef<(()=>void)|null>(null)
     
@@ -83,10 +83,10 @@ export function ManualTransitionProvider({
         <ManualContext.Provider value={value}>
             {outside}
             {children}
-            <PrevPage 
+            <CurrentPage 
             newSnapshot={newSnapshot}
             visiblity={visible}
-            prevPage={prevPage}
+            currentPage={currentPage}
             children={children}
             />
         </ManualContext.Provider>

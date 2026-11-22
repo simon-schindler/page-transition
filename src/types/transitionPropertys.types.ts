@@ -1,1 +1,0 @@
-export type TransitionProperty = 'opacity'|'clip-path'|'transform'

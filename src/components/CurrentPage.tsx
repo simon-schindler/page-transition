@@ -7,9 +7,9 @@ interface Props{
     children: ReactNode
     newSnapshot: number
     visiblity: boolean
-    prevPage: RefObject<HTMLDivElement|null>
+    currentPage: RefObject<HTMLDivElement|null>
 }
-export function PrevPage({children, newSnapshot, visiblity, prevPage}:Props){
+export function CurrentPage({children, newSnapshot, visiblity, currentPage}:Props){
     
     const container = useRef<HTMLDivElement|null>(null);
     const snapshot = useRef<HTMLDivElement|null>(null)
@@ -20,7 +20,7 @@ export function PrevPage({children, newSnapshot, visiblity, prevPage}:Props){
         snapshot.current?.replaceChildren(
             ...Array.from(container.current.childNodes).map(node => node.cloneNode(true))
         )
-        prevPage.current = snapshot.current
+        currentPage.current = snapshot.current
         
     },[newSnapshot])
     

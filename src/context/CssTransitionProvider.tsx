@@ -7,8 +7,8 @@ import { usePathname } from "next/navigation";
 
 import type { ReactNode } from "react";
 
-import { useTransitionEndHandler } from "../hooks/useTransitionEndHandler";
-import { useTransitionEndData } from "../hooks/useTransitionEndData";
+import { useAnimationEndHandler } from "../hooks/useAnimationEndHandler";
+import { useAnimationEndData } from "../hooks/useAnimationEndData";
 
 
 import { useHandleLinkClick } from "../hooks/useHandleLinkClick";
@@ -17,17 +17,14 @@ import { usePopState } from "../hooks/usePopState";
 
 import { dispatchNextPathname } from "./ActiveLinkContext"
 
-import type { TransitionProperty } from "../types/transitionPropertys.types";
 
-import { PrevPage } from "../components/PrevPage";
+import { CurrentPage } from "../components/CurrentPage";
 
 interface TransitionOptions{
-    transitionProperty: TransitionProperty
     overlays?: number
     items?: [number, number]
 }
 interface DefaultOptions{
-    transitionProperty: TransitionProperty
     overlays: number
     items: [number, number]
 }
@@ -68,16 +65,16 @@ export function CssTransitionProvider({
         initPathname: pathname
     })
     
-    const state = useRef<'idle'|'exiting'|'navigating'|'entering'>('idle')
+    const state = useRef<'idle'|'exiting'|'entering'>('idle')
     const basePath = useRef<string|null>(null)
     
     const [newSnapshot, setNewSnapshot]=useState(0)
     const [visible, setVisible]=useState(false)
-    const prevPage = useRef<HTMLDivElement|null>(null)
+    const currentPage = useRef<HTMLDivElement|null>(null)
 
     const handleLinkClick = useRef<((e: React.MouseEvent, url:string)=>void)>(()=>{})
 
-    const transitionEndHandler = useTransitionEndHandler()
+    const animationEndHandler = useAnimationEndHandler()
     
     const elArray = defaultOptions.items[0] > 0 ? firstItems : 
         defaultOptions.overlays > 0 ? overlays : pageWrapper
@@ -85,21 +82,17 @@ export function CssTransitionProvider({
     group.current = defaultOptions.overlays > 0 && defaultOptions.items[0] === 0 ?
     'overlay':null
 
-    const transitionEndData = useTransitionEndData({
+    const animationEndData = useAnimationEndData({
         elArray,
-        transitionProperty: defaultOptions.transitionProperty,
         group: group
     })
-
-    const pollRafId = useRef<number|null>(null)
 
     usePopState({
         container,
         basePath,
-        transitionEndData,
-        transitionEndHandler,
+        animationEndData,
+        animationEndHandler,
         state,
-        pollRafId,
         setVisible,
         setNewSnapshot
     })
@@ -107,10 +100,9 @@ export function CssTransitionProvider({
         container,
         handleLinkClick,
         basePath,
-        transitionEndData,
-        transitionEndHandler,
+        animationEndData,
+        animationEndHandler,
         state,
-        pollRafId,
         setVisible,
         setNewSnapshot
         
@@ -192,10 +184,10 @@ export function CssTransitionProvider({
                 >          
                 {children} 
                 </div>
-                <PrevPage 
+                <CurrentPage 
                 newSnapshot={newSnapshot}
                 visiblity={visible}
-                prevPage={prevPage}
+                currentPage={currentPage}
                 children={children}
                 />
             </div>
