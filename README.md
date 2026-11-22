@@ -10,7 +10,7 @@ A page transition library for the Next.js App Router.
 - Scroll restoration
 
 ## Install  
-![Version](https://img.shields.io/badge/v0.4.0-000000) ![82.8 KB](https://img.shields.io/badge/82.8_KB-1677FF)  
+![Version](https://img.shields.io/badge/v0.4.0-000000) ![82.9 KB](https://img.shields.io/badge/82.9_KB-1677FF)  
   
   `npm install page-transition`  
   
@@ -180,7 +180,6 @@ const {
 options
 
 ```ts
-transitionProperty: "opacity"
 overlays: 1
 
 ```
@@ -216,6 +215,7 @@ overlays: 1
     }
 }
 [data-transition].enter .overlay{
+    opacity: 1;
     animation: enter 0.5s ease forwards;
 }
 ```
@@ -260,8 +260,8 @@ overlays: 2
     }
 }
 [data-transition].enter .overlay:nth-child(1){
-    opacity: 0;
-    animation: opacity 0.5s ease forwards;
+    opacity: 1;
+    animation: enter 0.5s ease forwards;
 }
 
 [data-transition] .overlay:nth-child(2){
@@ -296,6 +296,7 @@ overlays: 2
     }
 }
 [data-transition].enter .overlay:nth-child(2){
+    clip-path: inset(0 0 0 0);
     animation: overlayEnter 1.2s ease forwards;
 }
 ```
@@ -313,6 +314,7 @@ items: [10, 0]
 ```scss
 [data-transition] .item-wrapper{
     position: fixed;
+    z-index: 98;
     inset: 0;
 
     display: grid;
@@ -349,6 +351,7 @@ items: [10, 0]
     }
 }
 [data-transition].enter .first-item{
+    clip-path: inset(0 -1px 0 -1px);
     animation: firstEnter 1.0s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
@@ -371,6 +374,7 @@ items: [10, 10]
 ```scss
 [data-transition] .item-wrapper{
     position: fixed;
+    z-index: 98;
     inset: 0;
 
     display: grid;
@@ -413,7 +417,7 @@ items: [10, 10]
 }
 [data-transition].enter .first-item{
     grid-row: 1;
-    clip-path: inset(0 -1px 100% -1px);
+    clip-path: inset(0 -1px 0 -1px);
     animation: firstEnter 1.2s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+1}){
@@ -457,7 +461,7 @@ items: [10, 10]
 }
 [data-transition].enter .second-item{
     grid-row: 2;
-    
+    clip-path: inset(0 -1px 0 -1px);
     animation: secondEnter 1.2s ease forwards;
     @for $i from 0 to 10{
         &:nth-child(#{$i+11}){
@@ -506,7 +510,7 @@ const { saveRef } = useActiveLink()
 
 ```
 
-**useExitFinsh**  
+**useExitFinish**  
 Returns true after the exit transition or when resolveFn is called.
 
 ```tsx
