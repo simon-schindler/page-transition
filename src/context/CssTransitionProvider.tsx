@@ -77,7 +77,7 @@ export function CssTransitionProvider({
     const animationEndHandler = useAnimationEndHandler()
     
     const elArray = defaultOptions.items[0] > 0 ? firstItems : 
-        defaultOptions.overlays > 0 ? overlays : pageWrapper
+        defaultOptions.overlays > 0 ? overlays : currentPage
         
     group.current = defaultOptions.overlays > 0 && defaultOptions.items[0] === 0 ?
     'overlay':null
