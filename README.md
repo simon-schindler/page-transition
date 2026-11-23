@@ -7,6 +7,7 @@ A page transition library for the Next.js App Router.
 ## Features
 
 - CSS & Manual mode
+- Browser Back / Forward Transitions
 - Scroll restoration
 
 ## Install  
